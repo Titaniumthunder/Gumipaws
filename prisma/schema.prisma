@@ -1,0 +1,70 @@
+// GumiPaws data model.
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // Used by `prisma migrate` when a pooled DATABASE_URL is in use (Neon/Supabase).
+  // Falls back to DATABASE_URL when DIRECT_URL is unset.
+  directUrl = env("DIRECT_URL")
+}
+
+enum BookingStatus {
+  confirmed
+  cancelled
+  completed
+}
+
+enum StaffRole {
+  ADMIN
+  MANAGER
+  WORKER
+}
+
+model Booking {
+  id                   String        @id @default(cuid())
+  services             String[] // e.g. ["Full Groom", "Nail Trim & Buff"]
+  groomerName          String // "Any available" | "Maria" | "Sam" | "Jordan"
+  petName              String
+  size                 String // Toy | Small | Medium | Large | X-Large
+  breed                String
+  date                 String // ISO date "YYYY-MM-DD" (spa is single-timezone)
+  time                 String // display label, e.g. "10:30am"
+  ownerName            String
+  phone                String
+  email                String
+  notes                String?
+  estimatedTotal       Decimal       @db.Decimal(10, 2)
+  status               BookingStatus @default(confirmed)
+  paidAtPickup         Boolean       @default(false)
+
+  // Random unguessable token for the customer self-cancel link
+  // (/booking/manage/[cancellationToken]). Generated at creation.
+  cancellationToken     String        @unique
+  googleCalendarEventId String?
+
+  // Integration health: populated when Calendar/email fails so the admin
+  // dashboard can flag the booking for manual follow-up / retry.
+  calendarSyncError String?
+  emailSyncError    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([date])
+  @@index([status])
+}
+
+model StaffUser {
+  id        String    @id @default(cuid())
+  name      String
+  // bcrypt hash of the staff member's numeric PIN. PINs are never stored in
+  // plaintext. Login iterates staff and bcrypt-compares (small team).
+  pinHash   String
+  role      StaffRole @default(WORKER)
+  createdAt DateTime  @default(now())
+}
