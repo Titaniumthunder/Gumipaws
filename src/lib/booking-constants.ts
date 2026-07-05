@@ -12,7 +12,11 @@ export const TIME_SLOTS = [
   "3:00pm",
 ] as const;
 
-/** ~19 common breeds plus a catch-all. */
+/**
+ * Common breeds plus a catch-all. The breed drives the coat type used for
+ * pricing (see coatTypeForBreed in pricing.ts) — curly/doodle breeds get the
+ * "Poodles & Oodles" full service, everything else gets "Full Groom".
+ */
 export const BREEDS = [
   "Labrador Retriever",
   "Golden Retriever",
@@ -20,6 +24,9 @@ export const BREEDS = [
   "Poodle",
   "Goldendoodle",
   "Labradoodle",
+  "Bernedoodle",
+  "Cockapoo",
+  "Bichon Frise",
   "German Shepherd",
   "Bulldog",
   "Beagle",

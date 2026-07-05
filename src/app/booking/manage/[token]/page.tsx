@@ -1,14 +1,10 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { formatUSD, SERVICE_BY_ID } from "@/lib/pricing";
+import { formatUSD, packageLabel, summarizeSelections } from "@/lib/pricing";
 import CancelBooking from "@/components/booking/CancelBooking";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-function serviceLabels(ids: string[]): string {
-  return ids.map((id) => SERVICE_BY_ID[id]?.label ?? id).join(", ");
-}
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
@@ -52,7 +48,8 @@ export default async function ManageBookingPage({
 
   const rows: [string, string][] = [
     ["Pet", `${booking.petName} · ${booking.size} · ${booking.breed}`],
-    ["Services", serviceLabels(booking.services)],
+    ["Package", packageLabel(booking.package)],
+    ["Add-ons", summarizeSelections(null, booking.addOns)],
     ["Groomer", booking.groomerName],
     ["Date & time", `${booking.date} at ${booking.time}`],
     ["Name", booking.ownerName],

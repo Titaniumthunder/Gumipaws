@@ -147,18 +147,32 @@ service account — no per-user OAuth.
 ## Pricing logic
 
 The price table lives in [`src/lib/pricing.ts`](src/lib/pricing.ts) as plain
-constants. `computeEstimate(serviceIds, size)` is the **single source of truth**:
+constants. `computeEstimate(packageId, addOnIds, size)` is the **single source of
+truth**:
 
-- Bath / Full Groom / Poodles & Oodles are priced by dog size (base services);
-  Puppy's First Groom is a flat-rate base groom.
-- De-shedding / Nail Trim & Buff / Teeth Brushing are flat add-ons.
-- If several base services are selected together, the **highest-priced one** is
-  charged as the base (no double-counting two grooms) and add-ons stack on top.
+- A booking has **at most one package** plus any number of flat **add-ons**:
+  `estimatedTotal = package price (0 if skipped) + sum of add-ons`.
+- The breed determines a **coat type** (`coatTypeForBreed`): curly/doodle breeds
+  (Poodle, Goldendoodle, Labradoodle, Bernedoodle, Cockapoo, Sheepadoodle,
+  Shih Tzu, Bichon Frise, …) → `curly`; everything else, including Mixed/Other →
+  `standard`.
+- Package options for the selected size + coat:
+  - **Bath** (both coats) — priced by size.
+  - The **full-service** package — `Full Groom` for standard coats, or
+    `Poodles & Oodles` for curly coats. These are alternatives; only the
+    coat-appropriate one is ever offered (not an extra choice).
+- **Add-ons** (10, flat): de-shedding, mat removal, ear cleaning, blueberry
+  facial, flea & tick shampoo, nail trim & buff, teeth brushing, anal gland
+  expression, paw balm & pad trim, bow/bandana or cologne.
 - Bath's posted price varies by coat length; since the wizard doesn't ask, the
   estimate uses the short-hair column (the "from" price).
 
-The booking API **recomputes** the total server-side — the client-sent price is
-never trusted.
+The booking API **recomputes** the total server-side and validates the package is
+allowed for the breed's coat type — the client-sent price is never trusted, and a
+mismatched package (e.g. a curly dog priced as `Full Groom`) is rejected.
+
+The wizard is a **6-step flow** (Breed & size → Package → Add-ons → Groomer &
+time → Contact → Review) with a **live running total** shown from step 2 onward.
 
 ## How a booking flows
 
@@ -246,7 +260,9 @@ The last remaining Admin can't be demoted or removed (safety guard).
 
 ```
 prisma/
-  schema.prisma            # Booking (+ cancellationToken) + StaffUser (roles)
+  schema.prisma            # Booking (package + addOns, cancellationToken) + StaffUser
+public/
+  gumipaws-hero.png        # homepage hero logo (add this file — see public/README.md)
   migrations/              # bundled initial migration
   seed.ts                  # seeds the initial ADMIN from ADMIN_NAME/ADMIN_PIN
 src/

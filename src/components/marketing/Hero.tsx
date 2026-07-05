@@ -44,14 +44,14 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Photo + badges */}
+        {/* Logo + badges */}
         <div className="relative">
-          <div className="overflow-hidden rounded-4xl shadow-soft">
+          <div className="overflow-hidden rounded-4xl bg-cream-deep shadow-soft">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={HERO_PHOTO}
-              alt="A freshly groomed, happy dog"
-              className="h-[380px] w-full object-cover md:h-[460px]"
+              alt="GumiPaws — grooming, daycare & boutique"
+              className="h-[380px] w-full object-contain p-4 md:h-[460px]"
               loading="eager"
             />
           </div>

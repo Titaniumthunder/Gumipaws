@@ -170,9 +170,11 @@ export const HOW_IT_WORKS = [
   },
 ];
 
-/** Unsplash dog photos for the hero and gallery (demo assets). */
-export const HERO_PHOTO =
-  "https://images.unsplash.com/photo-1583512603805-3cc6b41f3edb?auto=format&fit=crop&w=1200&q=80";
+/**
+ * Hero image — the GumiPaws logo. Served from `public/gumipaws-hero.png`.
+ * Save the provided logo file at that path (see README).
+ */
+export const HERO_PHOTO = "/gumipaws-hero.png";
 
 export const GALLERY_PHOTOS = [
   "https://images.unsplash.com/photo-1591160690555-5debfba289f0?auto=format&fit=crop&w=800&q=80",

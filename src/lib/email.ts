@@ -1,6 +1,11 @@
 import { Resend } from "resend";
 import type { Booking } from "@prisma/client";
-import { formatUSD, PRICE_DISCLAIMER } from "./pricing";
+import {
+  formatUSD,
+  packageLabel,
+  PRICE_DISCLAIMER,
+  summarizeSelections,
+} from "./pricing";
 
 /**
  * Transactional email via Resend. Sends a confirmation to the customer and a
@@ -26,7 +31,8 @@ function baseUrl(): string {
 function summaryRows(booking: Booking): string {
   const rows: [string, string][] = [
     ["Pet", `${booking.petName} · ${booking.size} · ${booking.breed}`],
-    ["Services", booking.services.join(", ")],
+    ["Package", packageLabel(booking.package)],
+    ["Add-ons", summarizeSelections(null, booking.addOns)],
     ["Groomer", booking.groomerName],
     ["Date & time", `${booking.date} at ${booking.time}`],
     ["Owner", booking.ownerName],

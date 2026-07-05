@@ -32,11 +32,12 @@ export async function POST(request: Request) {
   const data = parsed.data;
 
   // Server-side pricing — the source of truth.
-  const { total } = computeEstimate(data.services, data.size);
+  const { total } = computeEstimate(data.package, data.addOns, data.size);
 
   const booking = await prisma.booking.create({
     data: {
-      services: data.services,
+      package: data.package,
+      addOns: data.addOns,
       groomerName: data.groomerName,
       petName: data.petName,
       size: data.size,

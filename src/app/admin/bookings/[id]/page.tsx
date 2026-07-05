@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { formatUSD, SERVICE_BY_ID } from "@/lib/pricing";
+import { formatUSD, packageLabel, summarizeSelections } from "@/lib/pricing";
 import AdminHeader from "@/components/admin/AdminHeader";
 import BookingControls from "@/components/admin/BookingControls";
 
@@ -20,13 +20,10 @@ export default async function BookingDetailPage({
   });
   if (!booking) notFound();
 
-  const services = booking.services
-    .map((id) => SERVICE_BY_ID[id]?.label ?? id)
-    .join(", ");
-
   const rows: [string, string][] = [
     ["Pet", `${booking.petName} · ${booking.size} · ${booking.breed}`],
-    ["Services", services],
+    ["Package", packageLabel(booking.package)],
+    ["Add-ons", summarizeSelections(null, booking.addOns)],
     ["Groomer", booking.groomerName],
     ["Date & time", `${booking.date} at ${booking.time}`],
     ["Owner", booking.ownerName],

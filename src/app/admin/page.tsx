@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Prisma } from "@prisma/client";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { formatUSD, SERVICE_BY_ID } from "@/lib/pricing";
+import { formatUSD, summarizeSelections } from "@/lib/pricing";
 import AdminHeader from "@/components/admin/AdminHeader";
 import PaidToggle from "@/components/admin/PaidToggle";
 
@@ -120,7 +120,7 @@ export default async function AdminDashboard({
                 <th className="px-4 py-3">Date / time</th>
                 <th className="px-4 py-3">Pet</th>
                 <th className="px-4 py-3">Owner</th>
-                <th className="px-4 py-3">Services</th>
+                <th className="px-4 py-3">Package &amp; add-ons</th>
                 <th className="px-4 py-3">Est. total</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3 text-center">Paid</th>
@@ -154,10 +154,8 @@ export default async function AdminDashboard({
                     <div className="text-brown">{b.ownerName}</div>
                     <div className="text-xs text-brown-soft">{b.phone}</div>
                   </td>
-                  <td className="max-w-[200px] px-4 py-3 text-brown-soft">
-                    {b.services
-                      .map((id) => SERVICE_BY_ID[id]?.label ?? id)
-                      .join(", ")}
+                  <td className="max-w-[220px] px-4 py-3 text-brown-soft">
+                    {summarizeSelections(b.package, b.addOns)}
                   </td>
                   <td className="whitespace-nowrap px-4 py-3 font-medium text-brown">
                     {formatUSD(Number(b.estimatedTotal))}

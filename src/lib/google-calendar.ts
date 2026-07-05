@@ -1,7 +1,7 @@
 import { google } from "googleapis";
 import type { Booking } from "@prisma/client";
 import { TIME_SLOTS } from "./booking-constants";
-import { formatUSD } from "./pricing";
+import { formatUSD, summarizeSelections } from "./pricing";
 
 /**
  * Google Calendar integration via a service account (no per-user OAuth).
@@ -83,11 +83,12 @@ export async function upsertCalendarEvent(booking: Booking): Promise<string> {
   const start = localDateTime(booking.date, booking.time);
   const end = addMinutes(start, APPOINTMENT_MINUTES);
 
+  const selections = summarizeSelections(booking.package, booking.addOns);
   const requestBody = {
-    summary: `🐾 ${booking.petName} — ${booking.services.join(", ")}`,
+    summary: `🐾 ${booking.petName} — ${selections}`,
     description: [
       `Pet: ${booking.petName} (${booking.size}, ${booking.breed})`,
-      `Services: ${booking.services.join(", ")}`,
+      `Services: ${selections}`,
       `Groomer: ${booking.groomerName}`,
       `Owner: ${booking.ownerName}`,
       `Phone: ${booking.phone}`,

@@ -16,7 +16,7 @@ export default function TodayCard({
   size,
   breed,
   ownerName,
-  services,
+  selections,
   status,
   paidAtPickup,
 }: {
@@ -26,7 +26,7 @@ export default function TodayCard({
   size: string;
   breed: string;
   ownerName: string;
-  services: string;
+  selections: string;
   status: Status;
   paidAtPickup: boolean;
 }) {
@@ -88,7 +88,7 @@ export default function TodayCard({
         </span>
       </div>
 
-      <p className="mt-3 text-sm text-brown-soft">{services}</p>
+      <p className="mt-3 text-sm text-brown-soft">{selections}</p>
 
       {!cancelled && (
         <div className="mt-4 flex flex-wrap gap-2">

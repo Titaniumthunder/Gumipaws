@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { SERVICE_BY_ID } from "@/lib/pricing";
+import { summarizeSelections } from "@/lib/pricing";
 import AdminHeader from "@/components/admin/AdminHeader";
 import TodayCard from "@/components/admin/TodayCard";
 
@@ -50,9 +50,7 @@ export default async function TodayPage() {
                 size={b.size}
                 breed={b.breed}
                 ownerName={b.ownerName}
-                services={b.services
-                  .map((id) => SERVICE_BY_ID[id]?.label ?? id)
-                  .join(", ")}
+                selections={summarizeSelections(b.package, b.addOns)}
                 status={b.status}
                 paidAtPickup={b.paidAtPickup}
               />

@@ -2,11 +2,14 @@
 
 import { useMemo, useState } from "react";
 import {
-  SERVICES,
+  ADD_ONS,
+  coatTypeForBreed,
   computeEstimate,
   formatUSD,
   isValidSize,
+  packageOptions,
   PRICE_DISCLAIMER,
+  summarizeSelections,
   type Size,
 } from "@/lib/pricing";
 import {
@@ -17,10 +20,12 @@ import {
 } from "@/lib/booking-constants";
 
 type FormState = {
-  services: string[];
   petName: string;
-  size: string;
   breed: string;
+  size: string;
+  // null = not chosen yet, "skip" = add-ons only, otherwise a package id.
+  packageChoice: string | null;
+  addOns: string[];
   groomerName: string;
   date: string;
   time: string;
@@ -31,10 +36,11 @@ type FormState = {
 };
 
 const EMPTY: FormState = {
-  services: [],
   petName: "",
-  size: "",
   breed: "",
+  size: "",
+  packageChoice: null,
+  addOns: [],
   groomerName: "Any available",
   date: "",
   time: "",
@@ -44,7 +50,14 @@ const EMPTY: FormState = {
   notes: "",
 };
 
-const STEP_LABELS = ["Services", "Pet", "Groomer & time", "Contact", "Review"];
+const STEP_LABELS = [
+  "Breed & size",
+  "Package",
+  "Add-ons",
+  "Groomer & time",
+  "Contact",
+  "Review",
+];
 
 /** Local YYYY-MM-DD for the date input's `min` (today). */
 function todayISO(): string {
@@ -53,8 +66,13 @@ function todayISO(): string {
   return new Date(d.getTime() - off * 60000).toISOString().slice(0, 10);
 }
 
+/** Map the wizard's package choice to what we send/price (skip → null). */
+function resolvePackage(choice: string | null): string | null {
+  return choice && choice !== "skip" ? choice : null;
+}
+
 export default function BookingWizard() {
-  const [step, setStep] = useState(0); // 0..4
+  const [step, setStep] = useState(0); // 0..5
   const [form, setForm] = useState<FormState>(EMPTY);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -62,37 +80,49 @@ export default function BookingWizard() {
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setForm((f) => ({ ...f, [key]: value }));
 
-  const toggleService = (id: string) =>
+  const toggleAddOn = (id: string) =>
     setForm((f) => ({
       ...f,
-      services: f.services.includes(id)
-        ? f.services.filter((s) => s !== id)
-        : [...f.services, id],
+      addOns: f.addOns.includes(id)
+        ? f.addOns.filter((a) => a !== id)
+        : [...f.addOns, id],
     }));
 
-  // Live estimate for the Review step (and a running subtotal hint).
-  const breakdown = useMemo(() => {
-    if (!isValidSize(form.size)) return null;
-    return computeEstimate(form.services, form.size as Size);
-  }, [form.services, form.size]);
+  const sizeValid = isValidSize(form.size);
+  const coat = form.breed ? coatTypeForBreed(form.breed) : "standard";
 
-  /** Returns an error string if the current step is invalid, else null. */
+  // Live estimate (needs a valid size). Shown from step 2 (index 1) onward.
+  const breakdown = useMemo(() => {
+    if (!sizeValid) return null;
+    return computeEstimate(
+      resolvePackage(form.packageChoice),
+      form.addOns,
+      form.size as Size,
+    );
+  }, [form.packageChoice, form.addOns, form.size, sizeValid]);
+
+  const liveTotal = breakdown?.total ?? 0;
+  const showTotal = step >= 1 && sizeValid;
+
   function validateStep(s: number): string | null {
     switch (s) {
       case 0:
-        return form.services.length >= 1
-          ? null
-          : "Please select at least one service.";
-      case 1:
         if (!form.petName.trim()) return "Please enter your pet's name.";
-        if (!form.size) return "Please choose a size.";
         if (!form.breed) return "Please choose a breed.";
+        if (!form.size) return "Please choose a size.";
         return null;
+      case 1:
+        // A choice is required, but "skip" is a valid choice.
+        return form.packageChoice === null
+          ? "Please choose a package, or select “Skip”."
+          : null;
       case 2:
+        return null; // add-ons optional
+      case 3:
         if (!form.date) return "Please choose a date.";
         if (!form.time) return "Please choose a time.";
         return null;
-      case 3:
+      case 4:
         if (!form.ownerName.trim()) return "Please enter your name.";
         if (!form.phone.trim()) return "Please enter your phone number.";
         if (!/^\S+@\S+\.\S+$/.test(form.email))
@@ -119,8 +149,7 @@ export default function BookingWizard() {
   }
 
   async function submit() {
-    // Validate all steps defensively before submitting.
-    for (let s = 0; s <= 3; s++) {
+    for (let s = 0; s <= 4; s++) {
       const err = validateStep(s);
       if (err) {
         setError(err);
@@ -135,10 +164,11 @@ export default function BookingWizard() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          services: form.services,
           petName: form.petName,
-          size: form.size,
           breed: form.breed,
+          size: form.size,
+          package: resolvePackage(form.packageChoice),
+          addOns: form.addOns,
           groomerName: form.groomerName,
           date: form.date,
           time: form.time,
@@ -154,7 +184,6 @@ export default function BookingWizard() {
         setSubmitting(false);
         return;
       }
-      // Success — go to the DB-backed confirmation page.
       window.location.href = `/booking/success?id=${data.id}`;
     } catch {
       setError("Network error. Please check your connection and try again.");
@@ -167,7 +196,7 @@ export default function BookingWizard() {
   return (
     <div className="rounded-4xl bg-card p-6 shadow-soft sm:p-8">
       {/* Progress */}
-      <div className="mb-6">
+      <div className="mb-4">
         <div className="flex items-center justify-between text-sm">
           <span className="font-semibold text-brown">
             Step {step + 1} of {STEP_LABELS.length}
@@ -182,32 +211,16 @@ export default function BookingWizard() {
         </div>
       </div>
 
-      {/* Steps */}
-      {step === 0 && (
-        <Step title="Which services?" hint="Select one or more.">
-          <div className="grid gap-3 sm:grid-cols-2">
-            {SERVICES.map((svc) => {
-              const active = form.services.includes(svc.id);
-              return (
-                <button
-                  key={svc.id}
-                  type="button"
-                  onClick={() => toggleService(svc.id)}
-                  aria-pressed={active}
-                  className={chip(active, "justify-between")}
-                >
-                  <span className="font-medium">{svc.label}</span>
-                  <span className={active ? "text-white/90" : "text-brown-soft"}>
-                    {svc.priceLabel}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </Step>
+      {/* Live running total (from step 2 onward) */}
+      {showTotal && (
+        <div className="sticky top-16 z-20 mb-5 flex items-center justify-between rounded-2xl bg-brown px-4 py-3 text-cream shadow-card">
+          <span className="text-sm">Estimated total</span>
+          <span className="font-heading text-xl">{formatUSD(liveTotal)}</span>
+        </div>
       )}
 
-      {step === 1 && (
+      {/* Step 1 — Breed & size */}
+      {step === 0 && (
         <Step title="Tell us about your pup">
           <Field label="Pet name" required>
             <input
@@ -216,6 +229,21 @@ export default function BookingWizard() {
               onChange={(e) => set("petName", e.target.value)}
               placeholder="e.g. Biscuit"
             />
+          </Field>
+
+          <Field label="Breed" required>
+            <select
+              className={input}
+              value={form.breed}
+              onChange={(e) => set("breed", e.target.value)}
+            >
+              <option value="">Select a breed…</option>
+              {BREEDS.map((b) => (
+                <option key={b} value={b}>
+                  {b}
+                </option>
+              ))}
+            </select>
           </Field>
 
           <Field label="Size" required>
@@ -242,25 +270,112 @@ export default function BookingWizard() {
               ))}
             </div>
           </Field>
-
-          <Field label="Breed" required>
-            <select
-              className={input}
-              value={form.breed}
-              onChange={(e) => set("breed", e.target.value)}
-            >
-              <option value="">Select a breed…</option>
-              {BREEDS.map((b) => (
-                <option key={b} value={b}>
-                  {b}
-                </option>
-              ))}
-            </select>
-          </Field>
         </Step>
       )}
 
+      {/* Step 2 — Package */}
+      {step === 1 && (
+        <Step
+          title="Choose a package"
+          hint="Prices shown for your dog's size. Pick one, or skip to add-ons only."
+        >
+          <div className="space-y-3">
+            {sizeValid &&
+              packageOptions(form.size as Size, coat).map((opt) => {
+                const active = form.packageChoice === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => set("packageChoice", opt.id)}
+                    aria-pressed={active}
+                    className={packageCard(active)}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="font-heading text-lg">{opt.label}</div>
+                        <div
+                          className={`mt-1 text-sm ${
+                            active ? "text-white/85" : "text-brown-soft"
+                          }`}
+                        >
+                          {opt.description}
+                        </div>
+                      </div>
+                      <div className="shrink-0 font-heading text-xl">
+                        {formatUSD(opt.price)}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+
+            {/* Skip option */}
+            <button
+              type="button"
+              onClick={() => set("packageChoice", "skip")}
+              aria-pressed={form.packageChoice === "skip"}
+              className={packageCard(form.packageChoice === "skip")}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="font-heading text-lg">Skip — add-ons only</div>
+                  <div
+                    className={`mt-1 text-sm ${
+                      form.packageChoice === "skip"
+                        ? "text-white/85"
+                        : "text-brown-soft"
+                    }`}
+                  >
+                    No bath or groom — just pick from the add-ons next.
+                  </div>
+                </div>
+                <div className="shrink-0 font-heading text-xl">$0</div>
+              </div>
+            </button>
+          </div>
+        </Step>
+      )}
+
+      {/* Step 3 — Add-ons */}
       {step === 2 && (
+        <Step title="Add-ons" hint="Optional — pick any you'd like.">
+          <div className="grid gap-2 sm:grid-cols-2">
+            {ADD_ONS.map((a) => {
+              const active = form.addOns.includes(a.id);
+              return (
+                <button
+                  key={a.id}
+                  type="button"
+                  onClick={() => toggleAddOn(a.id)}
+                  aria-pressed={active}
+                  className={chip(active, "justify-between")}
+                >
+                  <span className="flex items-center gap-2 font-medium">
+                    <span
+                      aria-hidden
+                      className={`grid h-4 w-4 place-items-center rounded border text-[10px] ${
+                        active
+                          ? "border-white bg-white/20 text-white"
+                          : "border-black/20 text-transparent"
+                      }`}
+                    >
+                      ✓
+                    </span>
+                    {a.label}
+                  </span>
+                  <span className={active ? "text-white/90" : "text-brown-soft"}>
+                    {formatUSD(a.price)}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </Step>
+      )}
+
+      {/* Step 4 — Groomer & time */}
+      {step === 3 && (
         <Step title="Groomer & time">
           <Field label="Preferred groomer">
             <div className="flex flex-wrap gap-2">
@@ -306,7 +421,8 @@ export default function BookingWizard() {
         </Step>
       )}
 
-      {step === 3 && (
+      {/* Step 5 — Contact */}
+      {step === 4 && (
         <Step title="Your contact details">
           <Field label="Your name" required>
             <input
@@ -347,16 +463,22 @@ export default function BookingWizard() {
         </Step>
       )}
 
-      {step === 4 && (
+      {/* Step 6 — Review */}
+      {step === 5 && (
         <Step title="Review & confirm">
           <dl className="divide-y divide-black/5 rounded-2xl bg-cream/60 p-4 text-sm">
-            <Row label="Services">
-              {form.services
-                .map((id) => SERVICES.find((s) => s.id === id)?.label ?? id)
-                .join(", ")}
-            </Row>
             <Row label="Pet">
-              {form.petName} · {form.size} · {form.breed}
+              {form.petName} · {form.breed} · {form.size}
+            </Row>
+            <Row label="Package">
+              {resolvePackage(form.packageChoice)
+                ? summarizeSelections(resolvePackage(form.packageChoice), [])
+                : "None (add-ons only)"}
+            </Row>
+            <Row label="Add-ons">
+              {form.addOns.length
+                ? summarizeSelections(null, form.addOns)
+                : "None"}
             </Row>
             <Row label="Groomer">{form.groomerName}</Row>
             <Row label="When">
@@ -368,22 +490,27 @@ export default function BookingWizard() {
             {form.notes && <Row label="Notes">{form.notes}</Row>}
           </dl>
 
-          {/* Estimate */}
           {breakdown && (
             <div className="mt-4 rounded-2xl border border-blush/40 bg-blush-light/50 p-4">
-              <ul className="space-y-1 text-sm">
-                {breakdown.lineItems.map((li) => (
-                  <li key={li.id} className="flex justify-between">
-                    <span className="text-brown-soft">
-                      {li.label}
-                      {li.isBase ? "" : " (add-on)"}
-                    </span>
-                    <span className="font-medium text-brown">
-                      {formatUSD(li.amount)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              {breakdown.lineItems.length === 0 ? (
+                <p className="text-sm text-brown-soft">
+                  No package or add-ons selected.
+                </p>
+              ) : (
+                <ul className="space-y-1 text-sm">
+                  {breakdown.lineItems.map((li) => (
+                    <li key={li.id} className="flex justify-between">
+                      <span className="text-brown-soft">
+                        {li.label}
+                        {li.isPackage ? "" : " (add-on)"}
+                      </span>
+                      <span className="font-medium text-brown">
+                        {formatUSD(li.amount)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
               <div className="mt-3 flex items-center justify-between border-t border-blush/40 pt-3">
                 <span className="font-heading text-lg text-brown">
                   Estimated total
@@ -454,6 +581,15 @@ function chip(active: boolean, extra = "") {
       ? "border-blush bg-blush text-white shadow-card"
       : "border-black/10 bg-white text-brown hover:border-blush/50",
     extra,
+  ].join(" ");
+}
+
+function packageCard(active: boolean) {
+  return [
+    "w-full rounded-2xl border p-4 text-left transition",
+    active
+      ? "border-blush bg-blush text-white shadow-card"
+      : "border-black/10 bg-white text-brown hover:border-blush/50",
   ].join(" ");
 }
 

@@ -1,15 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { formatUSD, PRICE_DISCLAIMER, SERVICE_BY_ID } from "@/lib/pricing";
+import {
+  formatUSD,
+  packageLabel,
+  PRICE_DISCLAIMER,
+  summarizeSelections,
+} from "@/lib/pricing";
 
 export const runtime = "nodejs";
 // Always read fresh from the DB (survives refresh, not cached).
 export const dynamic = "force-dynamic";
-
-function serviceLabels(ids: string[]): string {
-  return ids.map((id) => SERVICE_BY_ID[id]?.label ?? id).join(", ");
-}
 
 export default async function BookingSuccessPage({
   searchParams,
@@ -24,7 +25,8 @@ export default async function BookingSuccessPage({
 
   const rows: [string, string][] = [
     ["Pet", `${booking.petName} · ${booking.size} · ${booking.breed}`],
-    ["Services", serviceLabels(booking.services)],
+    ["Package", packageLabel(booking.package)],
+    ["Add-ons", summarizeSelections(null, booking.addOns)],
     ["Groomer", booking.groomerName],
     ["Date & time", `${booking.date} at ${booking.time}`],
     ["Name", booking.ownerName],

@@ -27,7 +27,11 @@ enum StaffRole {
 
 model Booking {
   id                   String        @id @default(cuid())
-  services             String[] // e.g. ["Full Groom", "Nail Trim & Buff"]
+  // Chosen package id ("bath" | "full-groom" | "poodles-oodles"), or null when
+  // the customer skipped straight to add-ons.
+  package              String?
+  // Selected flat add-on ids, e.g. ["nail-trim", "teeth-brushing"].
+  addOns               String[]
   groomerName          String // "Any available" | "Maria" | "Sam" | "Jordan"
   petName              String
   size                 String // Toy | Small | Medium | Large | X-Large
