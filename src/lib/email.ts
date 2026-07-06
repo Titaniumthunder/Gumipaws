@@ -1,4 +1,7 @@
-import { Resend } from "resend";
+import {
+  EmailClient,
+  KnownEmailSendStatus,
+} from "@azure/communication-email";
 import type { Booking } from "@prisma/client";
 import {
   formatUSD,
@@ -8,15 +11,48 @@ import {
 } from "./pricing";
 
 /**
- * Transactional email via Resend. Sends a confirmation to the customer and a
- * notification to the business inbox. Throws on failure so the caller can log it.
+ * Transactional email via Azure Communication Services. Sends a confirmation
+ * to the customer and a notification to the business inbox. Throws on failure
+ * so the caller can log it.
  */
 
-const FROM =
-  process.env.EMAIL_FROM || "GumiPaws <onboarding@resend.dev>";
+/**
+ * ACS requires a bare sender address from a domain linked to the resource.
+ * Accept the legacy `Name <addr>` format in EMAIL_FROM and extract the address.
+ */
+function senderAddress(): string {
+  const raw = process.env.EMAIL_FROM || "";
+  const match = raw.match(/<([^>]+)>/);
+  return (match ? match[1] : raw).trim();
+}
 
 export function isEmailConfigured(): boolean {
-  return Boolean(process.env.RESEND_API_KEY);
+  return Boolean(
+    process.env.AZURE_COMMUNICATION_CONNECTION_STRING && senderAddress(),
+  );
+}
+
+/** Send one email and throw (with the given label) unless ACS reports success. */
+async function sendEmail(
+  label: string,
+  to: string,
+  subject: string,
+  html: string,
+): Promise<void> {
+  const client = new EmailClient(
+    process.env.AZURE_COMMUNICATION_CONNECTION_STRING!,
+  );
+  const poller = await client.beginSend({
+    senderAddress: senderAddress(),
+    recipients: { to: [{ address: to }] },
+    content: { subject, html },
+  });
+  const result = await poller.pollUntilDone();
+  if (result.status !== KnownEmailSendStatus.Succeeded) {
+    throw new Error(
+      `${label} email failed: ${result.error?.message ?? result.status}`,
+    );
+  }
 }
 
 /** Absolute base URL for links in emails (falls back to localhost in dev). */
@@ -93,16 +129,17 @@ function cancelCta(booking: Booking): string {
 /** Send both the customer and business emails. Throws if either send fails. */
 export async function sendBookingEmails(booking: Booking): Promise<void> {
   if (!isEmailConfigured()) {
-    throw new Error("Resend is not configured (missing RESEND_API_KEY).");
+    throw new Error(
+      "Email is not configured (missing AZURE_COMMUNICATION_CONNECTION_STRING or EMAIL_FROM).",
+    );
   }
-  const resend = new Resend(process.env.RESEND_API_KEY);
 
   // Customer confirmation.
-  const customer = await resend.emails.send({
-    from: FROM,
-    to: booking.email,
-    subject: `Your GumiPaws spa day for ${booking.petName} is confirmed 🐾`,
-    html: shell(
+  await sendEmail(
+    "Customer",
+    booking.email,
+    `Your GumiPaws spa day for ${booking.petName} is confirmed 🐾`,
+    shell(
       "Booking confirmed!",
       `Hi ${escapeHtml(booking.ownerName)}, we can't wait to pamper ${escapeHtml(
         booking.petName,
@@ -110,27 +147,21 @@ export async function sendBookingEmails(booking: Booking): Promise<void> {
       booking,
       cancelCta(booking), // customer copy gets the self-cancel link
     ),
-  });
-  if (customer.error) {
-    throw new Error(`Customer email failed: ${customer.error.message}`);
-  }
+  );
 
   // Business notification (best-effort, but still throws so admin sees it).
   const businessInbox = process.env.BUSINESS_NOTIFICATION_EMAIL;
   if (businessInbox) {
-    const biz = await resend.emails.send({
-      from: FROM,
-      to: businessInbox,
-      subject: `New booking: ${booking.petName} on ${booking.date} at ${booking.time}`,
-      html: shell(
+    await sendEmail(
+      "Business",
+      businessInbox,
+      `New booking: ${booking.petName} on ${booking.date} at ${booking.time}`,
+      shell(
         "New booking received",
         `A new booking just came in via the website.`,
         booking,
       ),
-    });
-    if (biz.error) {
-      throw new Error(`Business email failed: ${biz.error.message}`);
-    }
+    );
   }
 }
 
@@ -140,22 +171,20 @@ export async function sendBookingEmails(booking: Booking): Promise<void> {
  */
 export async function sendCancellationEmail(booking: Booking): Promise<void> {
   if (!isEmailConfigured()) {
-    throw new Error("Resend is not configured (missing RESEND_API_KEY).");
+    throw new Error(
+      "Email is not configured (missing AZURE_COMMUNICATION_CONNECTION_STRING or EMAIL_FROM).",
+    );
   }
-  const resend = new Resend(process.env.RESEND_API_KEY);
-  const res = await resend.emails.send({
-    from: FROM,
-    to: booking.email,
-    subject: `Your GumiPaws booking for ${booking.petName} is cancelled`,
-    html: shell(
+  await sendEmail(
+    "Cancellation",
+    booking.email,
+    `Your GumiPaws booking for ${booking.petName} is cancelled`,
+    shell(
       "Booking cancelled",
       `Hi ${escapeHtml(booking.ownerName)}, your appointment for ${escapeHtml(
         booking.petName,
       )} on ${booking.date} at ${booking.time} has been cancelled. We hope to see you another time — call (310) 555-0192 to rebook.`,
       booking,
     ),
-  });
-  if (res.error) {
-    throw new Error(`Cancellation email failed: ${res.error.message}`);
-  }
+  );
 }

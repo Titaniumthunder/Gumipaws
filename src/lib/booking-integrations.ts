@@ -32,7 +32,7 @@ export async function runBookingIntegrations(
     calendarSyncError = "Skipped: Google Calendar not configured.";
   }
 
-  // --- Email (Resend) ---
+  // --- Email (Azure Communication Services) ---
   if (isEmailConfigured()) {
     try {
       await sendBookingEmails(booking);
@@ -41,7 +41,7 @@ export async function runBookingIntegrations(
       console.error(`[booking ${booking.id}] email send failed:`, err);
     }
   } else {
-    emailSyncError = "Skipped: email (Resend) not configured.";
+    emailSyncError = "Skipped: email (Azure Communication Services) not configured.";
   }
 
   return prisma.booking.update({

@@ -14,11 +14,11 @@ Payment is **not** collected online — the app shows an **estimated price** dur
 | ---------- | -------------------------------------------------------------- |
 | Framework  | Next.js 14 (App Router) + TypeScript                            |
 | Styling    | Tailwind CSS (brand tokens in `tailwind.config.ts`)            |
-| Database   | PostgreSQL via Prisma ORM (Neon or Supabase — one `DATABASE_URL`) |
+| Database   | PostgreSQL via Prisma ORM (Azure Flexible Server, Neon, or Supabase — one `DATABASE_URL`) |
 | Auth       | Auth.js / NextAuth v5, custom Credentials (numeric **PIN**), bcrypt, roles, IP rate-limiting |
 | Calendar   | Google Calendar API via a **service account** (one shared calendar) |
-| Email      | Resend (transactional confirmation + business notification)    |
-| Deploy     | Vercel (any host works — everything is env-driven)             |
+| Email      | Azure Communication Services (transactional confirmation + business notification) |
+| Deploy     | Azure App Service (see [AZURE_DEPLOYMENT.md](AZURE_DEPLOYMENT.md)); any host works — everything is env-driven |
 
 ---
 
@@ -123,14 +123,19 @@ service account — no per-user OAuth.
 > If these are unset, booking still succeeds — the admin dashboard flags the
 > calendar sync as skipped/failed and offers a **Retry sync** button.
 
-### Resend (email)
+### Azure Communication Services (email)
 
-1. Create an account at <https://resend.com>.
-2. **API Keys → Create API Key** → set `RESEND_API_KEY`.
-3. Verify a sending domain (**Domains → Add**) and set `EMAIL_FROM` to an address
-   on it, e.g. `GumiPaws <hello@yourdomain.com>`. For quick local testing you can
-   leave the default `onboarding@resend.dev`.
-4. Set `BUSINESS_NOTIFICATION_EMAIL` to the inbox that should receive a copy of
+1. In the Azure portal, create a **Communication Services** resource and an
+   **Email Communication Services** resource (see
+   [AZURE_DEPLOYMENT.md](AZURE_DEPLOYMENT.md) step 3 for the full walkthrough).
+2. Provision a domain on the email resource (the **Azure Managed Domain** is
+   instant) and connect it to the Communication Services resource.
+3. Copy the connection string from the Communication Services **Keys** blade
+   into `AZURE_COMMUNICATION_CONNECTION_STRING`.
+4. Set `EMAIL_FROM` to the sender address the domain gives you, e.g.
+   `DoNotReply@<random>.azurecomm.net` or `hello@yourdomain.com` on a verified
+   custom domain.
+5. Set `BUSINESS_NOTIFICATION_EMAIL` to the inbox that should receive a copy of
    every new booking.
 
 > Email also fails gracefully — a send failure never blocks a booking; it's
@@ -180,7 +185,7 @@ time → Contact → Review) with a **live running total** shown from step 2 onw
    `estimatedTotal`, and creates a `Booking` with status `confirmed`.
 2. It then runs integrations ([`booking-integrations.ts`](src/lib/booking-integrations.ts)):
    creates a Google Calendar event (saving `googleCalendarEventId`) and sends
-   Resend emails to the customer and business.
+   confirmation emails (Azure Communication Services) to the customer and business.
 3. **Third-party failures never block the customer** — any error is written to
    `calendarSyncError` / `emailSyncError` on the booking so the admin dashboard
    can flag it and offer **Retry sync**.
@@ -289,7 +294,7 @@ src/
     access.ts              # roles + per-path access rules (edge-safe)
     rate-limit.ts          # per-IP login lockout
     google-calendar.ts     # service-account calendar create + delete
-    email.ts               # Resend emails (confirm, cancel, business)
+    email.ts               # ACS emails (confirm, cancel, business)
     booking-integrations.ts# orchestrates + records sync outcomes
     site.ts                # static marketing content
   auth.ts / auth.config.ts # NextAuth PIN setup (edge-safe split, role in JWT)

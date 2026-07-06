@@ -6,6 +6,11 @@ const nextConfig = {
     // own CDN / storage in production.
     remotePatterns: [{ protocol: "https", hostname: "images.unsplash.com" }],
   },
+  // The Azure App Service build box (B1, 1.75GB) OOMs on next build's
+  // in-process type check. Types are verified with `tsc --noEmit` before
+  // deploying instead.
+  typescript: { ignoreBuildErrors: true },
+  eslint: { ignoreDuringBuilds: true },
 };
 
 export default nextConfig;
