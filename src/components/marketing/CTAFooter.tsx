@@ -15,7 +15,7 @@ export default function CTAFooter() {
           </p>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
             <a
-              href="#book"
+              href="/book"
               className="rounded-full bg-white px-6 py-3 font-semibold text-blush shadow-card transition hover:bg-cream"
             >
               Book a spa day

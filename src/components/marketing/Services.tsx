@@ -43,7 +43,7 @@ export default function Services() {
               </p>
             )}
             <a
-              href="#book"
+              href="/book"
               className={[
                 "mt-4 inline-block text-sm font-semibold underline-offset-4 hover:underline",
                 card.accent ? "text-white" : "text-blush",

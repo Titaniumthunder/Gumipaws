@@ -25,7 +25,7 @@ export default function Hero() {
 
           <div className="mt-7 flex flex-wrap items-center gap-3">
             <a
-              href="#book"
+              href="/book"
               className="rounded-full bg-blush px-6 py-3 font-semibold text-white shadow-card transition hover:bg-blush/90"
             >
               Book a spa day

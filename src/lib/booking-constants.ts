@@ -1,7 +1,14 @@
 import { SIZES } from "./pricing";
 
 /** Groomer options shown in the wizard. "Any available" lets the spa assign. */
-export const GROOMERS = ["Any available", "Maria", "Sam", "Jordan"] as const;
+export const GROOMERS = [
+  "Any available",
+  "Maria",
+  "Sam",
+  "Jordan",
+  "Nicole",
+  "Donna",
+] as const;
 
 /** Fixed appointment slots offered by the spa. */
 export const TIME_SLOTS = [

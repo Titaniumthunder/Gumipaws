@@ -31,6 +31,28 @@ export async function POST(request: Request) {
   }
   const data = parsed.data;
 
+  // Concurrent bookings are welcome — but one named groomer can't take two
+  // dogs in the same slot. "Any available" never conflicts (the spa assigns).
+  if (data.groomerName !== "Any available") {
+    const clash = await prisma.booking.findFirst({
+      where: {
+        date: data.date,
+        time: data.time,
+        groomerName: data.groomerName,
+        status: "confirmed",
+      },
+      select: { id: true },
+    });
+    if (clash) {
+      return NextResponse.json(
+        {
+          error: `${data.groomerName} is already booked at ${data.time} on ${data.date}. Please pick a different time or choose another groomer.`,
+        },
+        { status: 409 },
+      );
+    }
+  }
+
   // Server-side pricing — the source of truth.
   const { total } = computeEstimate(data.package, data.addOns, data.size);
 

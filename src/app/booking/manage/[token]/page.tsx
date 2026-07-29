@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { formatUSD, packageLabel, summarizeSelections } from "@/lib/pricing";
+import {
+  formatUSDPlus,
+  packageLabel,
+  summarizeSelections,
+  totalPriceVaries,
+} from "@/lib/pricing";
 import CancelBooking from "@/components/booking/CancelBooking";
 
 export const runtime = "nodejs";
@@ -53,7 +58,13 @@ export default async function ManageBookingPage({
     ["Groomer", booking.groomerName],
     ["Date & time", `${booking.date} at ${booking.time}`],
     ["Name", booking.ownerName],
-    ["Estimated total", formatUSD(Number(booking.estimatedTotal))],
+    [
+      "Estimated total",
+      formatUSDPlus(
+        Number(booking.estimatedTotal),
+        totalPriceVaries(booking.package),
+      ),
+    ],
   ];
 
   const isCancellable = booking.status === "confirmed";

@@ -4,10 +4,11 @@ import {
 } from "@azure/communication-email";
 import type { Booking } from "@prisma/client";
 import {
-  formatUSD,
+  formatUSDPlus,
   packageLabel,
   PRICE_DISCLAIMER,
   summarizeSelections,
+  totalPriceVaries,
 } from "./pricing";
 
 /**
@@ -73,7 +74,13 @@ function summaryRows(booking: Booking): string {
     ["Date & time", `${booking.date} at ${booking.time}`],
     ["Owner", booking.ownerName],
     ["Phone", booking.phone],
-    ["Estimated total", `${formatUSD(Number(booking.estimatedTotal))} (pay at pickup)`],
+    [
+      "Estimated total",
+      `${formatUSDPlus(
+        Number(booking.estimatedTotal),
+        totalPriceVaries(booking.package),
+      )} (pay at pickup)`,
+    ],
   ];
   if (booking.notes) rows.push(["Notes", booking.notes]);
   return rows
@@ -126,7 +133,11 @@ function cancelCta(booking: Booking): string {
     </div>`;
 }
 
-/** Send both the customer and business emails. Throws if either send fails. */
+/**
+ * Send the customer and business emails. Each send is independent — a failure
+ * of one never blocks the other. Throws (after both attempts) if any send
+ * failed so the admin dashboard can flag it for retry.
+ */
 export async function sendBookingEmails(booking: Booking): Promise<void> {
   if (!isEmailConfigured()) {
     throw new Error(
@@ -134,34 +145,46 @@ export async function sendBookingEmails(booking: Booking): Promise<void> {
     );
   }
 
-  // Customer confirmation.
-  await sendEmail(
-    "Customer",
-    booking.email,
-    `Your GumiPaws spa day for ${booking.petName} is confirmed 🐾`,
-    shell(
-      "Booking confirmed!",
-      `Hi ${escapeHtml(booking.ownerName)}, we can't wait to pamper ${escapeHtml(
-        booking.petName,
-      )}. Here are your details — no deposit needed, just pay in person at pickup.`,
-      booking,
-      cancelCta(booking), // customer copy gets the self-cancel link
+  const sends: Promise<void>[] = [
+    // Customer confirmation.
+    sendEmail(
+      "Customer",
+      booking.email,
+      `Your GumiPaws spa day for ${booking.petName} is confirmed 🐾`,
+      shell(
+        "Booking confirmed!",
+        `Hi ${escapeHtml(booking.ownerName)}, we can't wait to pamper ${escapeHtml(
+          booking.petName,
+        )}. Here are your details — no deposit needed, just pay in person at pickup.`,
+        booking,
+        cancelCta(booking), // customer copy gets the self-cancel link
+      ),
     ),
-  );
+  ];
 
-  // Business notification (best-effort, but still throws so admin sees it).
+  // Business notification.
   const businessInbox = process.env.BUSINESS_NOTIFICATION_EMAIL;
   if (businessInbox) {
-    await sendEmail(
-      "Business",
-      businessInbox,
-      `New booking: ${booking.petName} on ${booking.date} at ${booking.time}`,
-      shell(
-        "New booking received",
-        `A new booking just came in via the website.`,
-        booking,
+    sends.push(
+      sendEmail(
+        "Business",
+        businessInbox,
+        `New booking: ${booking.petName} on ${booking.date} at ${booking.time}`,
+        shell(
+          "New booking received",
+          `A new booking just came in via the website.`,
+          booking,
+        ),
       ),
     );
+  }
+
+  const results = await Promise.allSettled(sends);
+  const failures = results
+    .filter((r): r is PromiseRejectedResult => r.status === "rejected")
+    .map((r) => (r.reason instanceof Error ? r.reason.message : String(r.reason)));
+  if (failures.length) {
+    throw new Error(failures.join(" · "));
   }
 }
 

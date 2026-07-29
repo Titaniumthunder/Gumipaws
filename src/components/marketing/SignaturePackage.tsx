@@ -47,7 +47,7 @@ export default function SignaturePackage() {
             ))}
           </ul>
           <a
-            href="#book"
+            href="/book"
             className="mt-6 block rounded-full bg-blush px-6 py-3 text-center font-semibold text-white shadow-card transition hover:bg-blush/90"
           >
             Book the full groom

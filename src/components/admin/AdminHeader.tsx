@@ -12,6 +12,7 @@ export default function AdminHeader({
 }) {
   const links: { href: string; label: string }[] = [
     { href: "/admin/today", label: "Today" },
+    { href: "/admin/calendar", label: "Calendar" },
   ];
   if (role === "MANAGER" || role === "ADMIN") {
     links.push({ href: "/admin", label: "All bookings" });
@@ -25,12 +26,12 @@ export default function AdminHeader({
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <div className="flex items-center gap-4">
           <Link href="/admin/today" className="flex items-center gap-2">
-            <span
-              aria-hidden
-              className="grid h-8 w-8 place-items-center rounded-full bg-blush text-white"
-            >
-              🐾
-            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/gumipaws-hero.png"
+              alt="GumiPaws logo"
+              className="h-8 w-8 rounded-full bg-cream-deep object-cover ring-1 ring-black/5"
+            />
             <span className="font-heading text-lg text-brown">
               GumiPaws
             </span>

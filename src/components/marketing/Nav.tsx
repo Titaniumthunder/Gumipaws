@@ -12,12 +12,12 @@ export default function Nav() {
       <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
         {/* Wordmark */}
         <a href="#top" className="flex items-center gap-2">
-          <span
-            aria-hidden
-            className="grid h-9 w-9 place-items-center rounded-full bg-blush text-lg"
-          >
-            🐾
-          </span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/gumipaws-hero.png"
+            alt="GumiPaws logo"
+            className="h-10 w-10 rounded-full bg-cream-deep object-cover ring-1 ring-black/5"
+          />
           <span className="font-heading text-xl text-brown">GumiPaws</span>
         </a>
 
@@ -40,7 +40,7 @@ export default function Nav() {
             {BUSINESS.phone}
           </a>
           <a
-            href="#book"
+            href="/book"
             className="rounded-full bg-blush px-4 py-2 text-sm font-semibold text-white shadow-card transition hover:bg-blush/90"
           >
             Book a spa day

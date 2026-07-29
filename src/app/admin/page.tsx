@@ -2,7 +2,11 @@ import Link from "next/link";
 import type { Prisma } from "@prisma/client";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { formatUSD, summarizeSelections } from "@/lib/pricing";
+import {
+  formatUSDPlus,
+  summarizeSelections,
+  totalPriceVaries,
+} from "@/lib/pricing";
 import AdminHeader from "@/components/admin/AdminHeader";
 import PaidToggle from "@/components/admin/PaidToggle";
 
@@ -158,7 +162,10 @@ export default async function AdminDashboard({
                     {summarizeSelections(b.package, b.addOns)}
                   </td>
                   <td className="whitespace-nowrap px-4 py-3 font-medium text-brown">
-                    {formatUSD(Number(b.estimatedTotal))}
+                    {formatUSDPlus(
+                      Number(b.estimatedTotal),
+                      totalPriceVaries(b.package),
+                    )}
                   </td>
                   <td className="px-4 py-3">
                     <span

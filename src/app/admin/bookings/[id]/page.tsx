@@ -2,7 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { formatUSD, packageLabel, summarizeSelections } from "@/lib/pricing";
+import {
+  formatUSDPlus,
+  packageLabel,
+  summarizeSelections,
+  totalPriceVaries,
+} from "@/lib/pricing";
 import AdminHeader from "@/components/admin/AdminHeader";
 import BookingControls from "@/components/admin/BookingControls";
 
@@ -29,7 +34,13 @@ export default async function BookingDetailPage({
     ["Owner", booking.ownerName],
     ["Phone", booking.phone],
     ["Email", booking.email],
-    ["Estimated total", formatUSD(Number(booking.estimatedTotal))],
+    [
+      "Estimated total",
+      formatUSDPlus(
+        Number(booking.estimatedTotal),
+        totalPriceVaries(booking.package),
+      ),
+    ],
     ["Notes", booking.notes || "—"],
     ["Created", booking.createdAt.toLocaleString()],
   ];

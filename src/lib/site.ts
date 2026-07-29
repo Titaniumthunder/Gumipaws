@@ -42,27 +42,27 @@ export const SERVICE_CARDS = [
   },
   {
     title: "Puppy's First Groom",
-    price: "$40",
+    price: "$40+",
     blurb: "A gentle intro to the spa for pups under six months.",
   },
   {
     title: "De-shedding",
-    price: "$20",
+    price: "$20+",
     blurb: "Loosen and lift the undercoat so your home stays fluff-free.",
   },
   {
     title: "Mat Removal",
-    price: "$15",
+    price: "$15+",
     blurb: "Careful de-matting to keep skin comfortable and healthy.",
   },
   {
     title: "Nail Trim & Buff",
-    price: "$15",
+    price: "$15+",
     blurb: "Trimmed, smoothed, and buffed for happy paws.",
   },
   {
     title: "Teeth Brushing",
-    price: "$12",
+    price: "$12+",
     blurb: "Fresh breath and a healthy smile between vet visits.",
   },
   {
@@ -83,11 +83,11 @@ export const FULL_GROOM_CHECKLIST = [
 ];
 
 export const FULL_GROOM_SIZE_PRICING = [
-  { size: "Toy", price: "$109" },
-  { size: "Small", price: "$124" },
-  { size: "Medium", price: "$149" },
-  { size: "Large", price: "$159" },
-  { size: "X-Large", price: "$179" },
+  { size: "Toy", price: "$109+" },
+  { size: "Small", price: "$124+" },
+  { size: "Medium", price: "$149+" },
+  { size: "Large", price: "$159+" },
+  { size: "X-Large", price: "$179+" },
 ];
 
 /** Three-column pricing table by size. */
@@ -97,11 +97,11 @@ export const PRICING_COLUMNS = [
     popular: false,
     note: "short / long hair",
     rows: [
-      { size: "Toy", price: "$50 / $60" },
-      { size: "Small", price: "$60 / $70" },
-      { size: "Medium", price: "$75 / $95" },
-      { size: "Large", price: "$90 / $109" },
-      { size: "X-Large", price: "$110 / $134" },
+      { size: "Toy", price: "$50+ / $60+" },
+      { size: "Small", price: "$60+ / $70+" },
+      { size: "Medium", price: "$75+ / $95+" },
+      { size: "Large", price: "$90+ / $109+" },
+      { size: "X-Large", price: "$110+ / $134+" },
     ],
   },
   {
@@ -109,11 +109,11 @@ export const PRICING_COLUMNS = [
     popular: true,
     note: "all-inclusive",
     rows: [
-      { size: "Toy", price: "$109" },
-      { size: "Small", price: "$124" },
-      { size: "Medium", price: "$149" },
-      { size: "Large", price: "$159" },
-      { size: "X-Large", price: "$179" },
+      { size: "Toy", price: "$109+" },
+      { size: "Small", price: "$124+" },
+      { size: "Medium", price: "$149+" },
+      { size: "Large", price: "$159+" },
+      { size: "X-Large", price: "$179+" },
     ],
   },
   {
@@ -121,27 +121,27 @@ export const PRICING_COLUMNS = [
     popular: false,
     note: "curly & doodle coats",
     rows: [
-      { size: "Toy", price: "$139" },
-      { size: "Small", price: "$159" },
-      { size: "Medium", price: "$179" },
-      { size: "Large", price: "$209" },
-      { size: "X-Large", price: "$249" },
+      { size: "Toy", price: "$139+" },
+      { size: "Small", price: "$159+" },
+      { size: "Medium", price: "$179+" },
+      { size: "Large", price: "$209+" },
+      { size: "X-Large", price: "$249+" },
     ],
   },
 ];
 
 /** 10 add-ons listed below the pricing table. */
 export const ADD_ONS = [
-  { name: "De-shedding treatment", price: "$20" },
-  { name: "Nail trim & buff", price: "$15" },
-  { name: "Mat removal", price: "$15" },
-  { name: "Teeth brushing", price: "$12" },
-  { name: "Ear cleaning", price: "$10" },
-  { name: "Anal gland expression", price: "$12" },
-  { name: "Blueberry facial", price: "$10" },
-  { name: "Paw balm & pad trim", price: "$8" },
-  { name: "Flea & tick shampoo", price: "$15" },
-  { name: "Bow, bandana or cologne", price: "$5" },
+  { name: "De-shedding treatment", price: "$20+" },
+  { name: "Nail trim & buff", price: "$15+" },
+  { name: "Mat removal", price: "$15+" },
+  { name: "Teeth brushing", price: "$12+" },
+  { name: "Ear cleaning", price: "$10+" },
+  { name: "Anal gland expression", price: "$12+" },
+  { name: "Blueberry facial", price: "$10+" },
+  { name: "Paw balm & pad trim", price: "$8+" },
+  { name: "Flea & tick shampoo", price: "$15+" },
+  { name: "Bow, bandana or cologne", price: "$5+" },
 ];
 
 export const SIZE_FOOTNOTE =

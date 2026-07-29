@@ -5,9 +5,12 @@ import {
   ADD_ONS,
   coatTypeForBreed,
   computeEstimate,
+  ESTIMATED_TAX_RATE,
   formatUSD,
+  formatUSDPlus,
   isValidSize,
   packageOptions,
+  packagePrice,
   PRICE_DISCLAIMER,
   summarizeSelections,
   type Size,
@@ -76,6 +79,13 @@ export default function BookingWizard() {
   const [form, setForm] = useState<FormState>(EMPTY);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  // Package ids whose "What's included" list is expanded.
+  const [expanded, setExpanded] = useState<string[]>([]);
+
+  const toggleExpanded = (id: string) =>
+    setExpanded((e) =>
+      e.includes(id) ? e.filter((x) => x !== id) : [...e, id],
+    );
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setForm((f) => ({ ...f, [key]: value }));
@@ -195,27 +205,61 @@ export default function BookingWizard() {
 
   return (
     <div className="rounded-4xl bg-card p-6 shadow-soft sm:p-8">
-      {/* Progress */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between text-sm">
-          <span className="font-semibold text-brown">
-            Step {step + 1} of {STEP_LABELS.length}
-          </span>
-          <span className="text-brown-soft">{STEP_LABELS[step]}</span>
-        </div>
-        <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-cream-deep">
-          <div
-            className="h-full rounded-full bg-blush transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
+      {/* Progress — numbered steps with the current label */}
+      <div className="mb-5">
+        <ol className="flex items-center gap-1.5 sm:gap-2">
+          {STEP_LABELS.map((label, i) => {
+            const done = i < step;
+            const current = i === step;
+            return (
+              <li key={label} className="flex flex-1 items-center gap-1.5 sm:gap-2">
+                <span
+                  aria-current={current ? "step" : undefined}
+                  title={label}
+                  className={[
+                    "grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-bold transition",
+                    done && "bg-blush text-white",
+                    current && "bg-brown text-cream ring-2 ring-blush/40",
+                    !done && !current && "bg-cream-deep text-brown-soft",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
+                  {done ? "✓" : i + 1}
+                </span>
+                {i < STEP_LABELS.length - 1 && (
+                  <span
+                    aria-hidden
+                    className={`h-0.5 flex-1 rounded-full ${
+                      done ? "bg-blush" : "bg-cream-deep"
+                    }`}
+                  />
+                )}
+              </li>
+            );
+          })}
+        </ol>
+        <p className="mt-2 text-sm text-brown-soft">
+          Step {step + 1} of {STEP_LABELS.length} ·{" "}
+          <span className="font-semibold text-brown">{STEP_LABELS[step]}</span>
+        </p>
       </div>
 
       {/* Live running total (from step 2 onward) */}
       {showTotal && (
         <div className="sticky top-16 z-20 mb-5 flex items-center justify-between rounded-2xl bg-brown px-4 py-3 text-cream shadow-card">
-          <span className="text-sm">Estimated total</span>
-          <span className="font-heading text-xl">{formatUSD(liveTotal)}</span>
+          <span className="text-sm">
+            Estimated total{" "}
+            <span className="text-xs text-cream/70">incl. est. tax</span>
+            {breakdown?.totalVaries && (
+              <span className="block text-xs text-cream/70">
+                starting price — confirmed at drop-off
+              </span>
+            )}
+          </span>
+          <span className="font-heading text-xl">
+            {formatUSDPlus(liveTotal, breakdown?.totalVaries ?? false)}
+          </span>
         </div>
       )}
 
@@ -266,10 +310,40 @@ export default function BookingWizard() {
                   >
                     {opt.hint}
                   </span>
+                  <span
+                    className={
+                      form.size === opt.value
+                        ? "text-xs font-semibold text-white/90"
+                        : "text-xs font-semibold text-blush"
+                    }
+                  >
+                    from{" "}
+                    {formatUSDPlus(
+                      packagePrice("bath", opt.value as Size),
+                      true,
+                    )}
+                  </span>
                 </button>
               ))}
             </div>
           </Field>
+
+          {/* Price preview for the chosen breed + size */}
+          {sizeValid && form.breed && (
+            <div className="rounded-2xl bg-cream/60 px-4 py-3 text-sm">
+              <span className="font-medium text-brown">
+                Prices for a {form.size.toLowerCase()} {form.breed}:{" "}
+              </span>
+              <span className="text-brown-soft">
+                {packageOptions(form.size as Size, coat)
+                  .map(
+                    (o) =>
+                      `${o.label} ${formatUSDPlus(o.price, o.priceVaries)}`,
+                  )
+                  .join(" · ")}
+              </span>
+            </div>
+          )}
         </Step>
       )}
 
@@ -283,13 +357,21 @@ export default function BookingWizard() {
             {sizeValid &&
               packageOptions(form.size as Size, coat).map((opt) => {
                 const active = form.packageChoice === opt.id;
+                const isOpen = expanded.includes(opt.id);
                 return (
-                  <button
+                  <div
                     key={opt.id}
-                    type="button"
+                    role="button"
+                    tabIndex={0}
                     onClick={() => set("packageChoice", opt.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        set("packageChoice", opt.id);
+                      }
+                    }}
                     aria-pressed={active}
-                    className={packageCard(active)}
+                    className={`${packageCard(active)} cursor-pointer`}
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
@@ -302,11 +384,55 @@ export default function BookingWizard() {
                           {opt.description}
                         </div>
                       </div>
-                      <div className="shrink-0 font-heading text-xl">
-                        {formatUSD(opt.price)}
+                      <div className="shrink-0 text-right">
+                        <div className="font-heading text-xl">
+                          {formatUSDPlus(opt.price, opt.priceVaries)}
+                        </div>
+                        {opt.priceVaries && (
+                          <div
+                            className={`text-[11px] ${
+                              active ? "text-white/70" : "text-brown-soft"
+                            }`}
+                          >
+                            starting price
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </button>
+
+                    {/* Expandable "what's included" (Healthy Spot-style More/Less) */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleExpanded(opt.id);
+                      }}
+                      aria-expanded={isOpen}
+                      className={`mt-2 text-sm font-semibold underline underline-offset-2 ${
+                        active
+                          ? "text-white/90 hover:text-white"
+                          : "text-blush hover:text-blush/80"
+                      }`}
+                    >
+                      {isOpen ? "Hide details ▴" : "What's included ▾"}
+                    </button>
+                    {isOpen && (
+                      <ul
+                        className={`mt-2 space-y-1.5 text-sm ${
+                          active ? "text-white/85" : "text-brown-soft"
+                        }`}
+                      >
+                        {opt.includes.map((item) => (
+                          <li key={item} className="flex items-start gap-2">
+                            <span aria-hidden className="mt-0.5">
+                              ✓
+                            </span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 );
               })}
 
@@ -349,23 +475,34 @@ export default function BookingWizard() {
                   type="button"
                   onClick={() => toggleAddOn(a.id)}
                   aria-pressed={active}
-                  className={chip(active, "justify-between")}
+                  className={chip(active, "!items-start flex-col !gap-1 text-left")}
                 >
-                  <span className="flex items-center gap-2 font-medium">
-                    <span
-                      aria-hidden
-                      className={`grid h-4 w-4 place-items-center rounded border text-[10px] ${
-                        active
-                          ? "border-white bg-white/20 text-white"
-                          : "border-black/20 text-transparent"
-                      }`}
-                    >
-                      ✓
+                  <span className="flex w-full items-center justify-between gap-2">
+                    <span className="flex items-center gap-2 font-medium">
+                      <span
+                        aria-hidden
+                        className={`grid h-4 w-4 shrink-0 place-items-center rounded border text-[10px] ${
+                          active
+                            ? "border-white bg-white/20 text-white"
+                            : "border-black/20 text-transparent"
+                        }`}
+                      >
+                        ✓
+                      </span>
+                      {a.label}
                     </span>
-                    {a.label}
+                    <span
+                      className={active ? "text-white/90" : "text-brown-soft"}
+                    >
+                      {formatUSDPlus(a.price, true)}
+                    </span>
                   </span>
-                  <span className={active ? "text-white/90" : "text-brown-soft"}>
-                    {formatUSD(a.price)}
+                  <span
+                    className={`pl-6 text-xs leading-snug ${
+                      active ? "text-white/75" : "text-brown-soft"
+                    }`}
+                  >
+                    {a.description}
                   </span>
                 </button>
               );
@@ -505,18 +642,36 @@ export default function BookingWizard() {
                         {li.isPackage ? "" : " (add-on)"}
                       </span>
                       <span className="font-medium text-brown">
-                        {formatUSD(li.amount)}
+                        {formatUSDPlus(li.amount, li.varies)}
                       </span>
                     </li>
                   ))}
                 </ul>
+              )}
+              {breakdown.lineItems.length > 0 && (
+                <div className="mt-3 space-y-1 border-t border-blush/40 pt-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-brown-soft">Subtotal</span>
+                    <span className="font-medium text-brown">
+                      {formatUSDPlus(breakdown.subtotal, breakdown.totalVaries)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-brown-soft">
+                      Estimated tax ({(ESTIMATED_TAX_RATE * 100).toFixed(2).replace(/\.?0+$/, "")}%)
+                    </span>
+                    <span className="font-medium text-brown">
+                      {formatUSD(breakdown.tax)}
+                    </span>
+                  </div>
+                </div>
               )}
               <div className="mt-3 flex items-center justify-between border-t border-blush/40 pt-3">
                 <span className="font-heading text-lg text-brown">
                   Estimated total
                 </span>
                 <span className="font-heading text-xl text-brown">
-                  {formatUSD(breakdown.total)}
+                  {formatUSDPlus(breakdown.total, breakdown.totalVaries)}
                 </span>
               </div>
               <p className="mt-2 text-xs text-brown-soft">{PRICE_DISCLAIMER}</p>

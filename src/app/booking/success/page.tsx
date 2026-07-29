@@ -2,10 +2,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import {
-  formatUSD,
+  formatUSDPlus,
   packageLabel,
   PRICE_DISCLAIMER,
   summarizeSelections,
+  totalPriceVaries,
 } from "@/lib/pricing";
 
 export const runtime = "nodejs";
@@ -69,7 +70,10 @@ export default async function BookingSuccessPage({
               Estimated total
             </span>
             <span className="font-heading text-xl text-brown">
-              {formatUSD(Number(booking.estimatedTotal))}
+              {formatUSDPlus(
+                Number(booking.estimatedTotal),
+                totalPriceVaries(booking.package),
+              )}
             </span>
           </div>
           <p className="mt-2 text-xs text-brown-soft">{PRICE_DISCLAIMER}</p>
