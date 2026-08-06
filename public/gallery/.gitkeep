@@ -1,0 +1,3 @@
+Put client photos and video clips here, then reference them in
+GALLERY_ITEMS in src/lib/site.ts using the path after "public" —
+public/gallery/jojo-after.jpg  ->  "/gallery/jojo-after.jpg"

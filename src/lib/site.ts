@@ -171,16 +171,126 @@ export const HOW_IT_WORKS = [
 ];
 
 /**
- * Hero image — the GumiPaws logo. Served from `public/gumipaws-hero.png`.
- * Save the provided logo file at that path (see README).
+ * The GumiPaws logo, served from `public/gumipaws-hero.png` (see README).
+ * It used to be the hero image; the hero now leads with a before/after
+ * comparison, so the mark lives in the nav bar instead.
  */
-export const HERO_PHOTO = "/gumipaws-hero.png";
+export const LOGO = "/gumipaws-hero.png";
 
-export const GALLERY_PHOTOS = [
-  "https://images.unsplash.com/photo-1591160690555-5debfba289f0?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1534361960057-19889db9621e?auto=format&fit=crop&w=800&q=80",
+/**
+ * One dog's photos. `before` is optional: entries that have both render as a
+ * drag-to-compare slider, entries with only an `after` render as a plain photo.
+ */
+export type GalleryPhoto = {
+  dogName: string;
+  /** Pre-groom shot. Omit until there actually is one. */
+  before?: string;
+  after: string;
+};
+
+/** One dog's video clip. Renders a player in the grid instead of photos. */
+export type GalleryClip = {
+  dogName: string;
+  /** Video file, e.g. "/gallery/luna.mp4". MP4 (H.264) plays everywhere. */
+  video: string;
+  /** Still frame shown before playback. Worth adding — without it the cell
+   *  is blank until the browser fetches enough of the video to draw a frame. */
+  poster?: string;
+};
+
+/** A gallery cell is either photos or a video clip. */
+export type GalleryEntry = GalleryPhoto | GalleryClip;
+
+/* ---------------------------------------------------------------------------
+ * ADDING YOUR OWN PHOTOS AND VIDEOS
+ *
+ * 1. Drop the files into `public/gallery/`.
+ * 2. Reference them by the path *after* `public`, so
+ *    `public/gallery/jojo-after.jpg` is written `/gallery/jojo-after.jpg`.
+ * 3. Add or edit an entry in GALLERY_ITEMS below. Three shapes are supported:
+ *
+ *      // both shots -> drag-to-compare slider
+ *      { dogName: "Jojo", before: "/gallery/jojo-before.jpg",
+ *                          after: "/gallery/jojo-after.jpg" }
+ *
+ *      // only one shot -> ordinary photo, no slider UI
+ *      { dogName: "Milo", after: "/gallery/milo-after.jpg" }
+ *
+ *      // a clip -> video player
+ *      { dogName: "Luna", video: "/gallery/luna.mp4",
+ *                         poster: "/gallery/luna-poster.jpg" }
+ *
+ * Order in this array is the order in the grid. The first, fourth and last
+ * cells are the large ones, so put your best shots there. Adding a seventh
+ * entry is fine — it just flows into a normal-sized cell.
+ *
+ * No rebuild-time image processing happens, so resize before adding: roughly
+ * 1600px wide for photos and keep clips short and under ~10MB, or the page
+ * gets heavy.
+ * ------------------------------------------------------------------------ */
+
+/**
+ * PLACEHOLDER PHOTOS — stock dogs, not GumiPaws clients, and the "before"/
+ * "after" shots are unrelated images rather than a real pair. Swap every URL
+ * below for real client photos (e.g. `/gallery/jojo-before.jpg`) as they come in.
+ */
+export const HERO_BEFORE_AFTER: GalleryPhoto = {
+  dogName: "Biscuit",
+  before:
+    "https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=1000&q=80",
+  after:
+    "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=1000&q=80",
+};
+
+/**
+ * Gallery entries, in grid order. Also PLACEHOLDER photos — see the note above.
+ * A mix on purpose: three have a before shot and render as sliders, three are
+ * plain photos, which is what the real library will look like for a while.
+ */
+export const GALLERY_ITEMS: GalleryEntry[] = [
+  {
+    dogName: "Jojo",
+    before:
+      "https://images.unsplash.com/photo-1477884213360-7e9d7dcc1e48?auto=format&fit=crop&w=800&q=80",
+    after:
+      "https://images.unsplash.com/photo-1591160690555-5debfba289f0?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    dogName: "Milo",
+    after:
+      "https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    dogName: "Poppy",
+    after:
+      "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    dogName: "Bear",
+    before:
+      "https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=800&q=80",
+    after:
+      "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    dogName: "Nori",
+    after:
+      "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    dogName: "Mochi",
+    before:
+      "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?auto=format&fit=crop&w=800&q=80",
+    after:
+      "https://images.unsplash.com/photo-1534361960057-19889db9621e?auto=format&fit=crop&w=800&q=80",
+  },
+
+  // The video slot. Drop a clip into `public/gallery/`, then uncomment and
+  // point this at it. Left commented out because an entry pointing at a file
+  // that isn't there yet renders an empty player.
+  // {
+  //   dogName: "Luna",
+  //   video: "/gallery/luna.mp4",
+  //   poster: "/gallery/luna-poster.jpg",
+  // },
 ];

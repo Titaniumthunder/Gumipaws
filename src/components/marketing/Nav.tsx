@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BUSINESS, NAV_LINKS } from "@/lib/site";
+import { BUSINESS, LOGO, NAV_LINKS } from "@/lib/site";
 
 /** Sticky top navigation with a mobile drawer. */
 export default function Nav() {
@@ -14,7 +14,7 @@ export default function Nav() {
         <a href="#top" className="flex items-center gap-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/gumipaws-hero.png"
+            src={LOGO}
             alt="GumiPaws logo"
             className="h-10 w-10 rounded-full bg-cream-deep object-cover ring-1 ring-black/5"
           />

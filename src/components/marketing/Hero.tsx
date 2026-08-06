@@ -1,4 +1,5 @@
-import { BUSINESS, HERO_PHOTO } from "@/lib/site";
+import { BUSINESS, HERO_BEFORE_AFTER } from "@/lib/site";
+import BeforeAfterSlider from "./BeforeAfterSlider";
 
 /** Five gold stars for the social-proof line. */
 function Stars() {
@@ -44,16 +45,10 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Logo + badges */}
+        {/* Before / after + badges */}
         <div className="relative">
-          <div className="overflow-hidden rounded-4xl bg-cream-deep shadow-soft">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={HERO_PHOTO}
-              alt="GumiPaws — grooming, daycare & boutique"
-              className="h-[380px] w-full object-contain p-4 md:h-[460px]"
-              loading="eager"
-            />
+          <div className="h-[380px] overflow-hidden rounded-4xl bg-cream-deep shadow-soft md:h-[460px]">
+            <BeforeAfterSlider {...HERO_BEFORE_AFTER} loading="eager" />
           </div>
           <span className="absolute -left-3 top-6 rounded-full bg-card px-4 py-2 text-sm font-semibold text-brown shadow-card">
             ✨ Same-week spots
