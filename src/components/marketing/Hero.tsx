@@ -1,5 +1,5 @@
-import { BUSINESS, HERO_BEFORE_AFTER } from "@/lib/site";
-import BeforeAfterSlider from "./BeforeAfterSlider";
+import { BUSINESS } from "@/content/site";
+import HeroSlideshow from "./HeroSlideshow";
 
 /** Five gold stars for the social-proof line. */
 function Stars() {
@@ -45,10 +45,10 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Before / after + badges */}
+        {/* Rotating photo + badges */}
         <div className="relative">
           <div className="h-[380px] overflow-hidden rounded-4xl bg-cream-deep shadow-soft md:h-[460px]">
-            <BeforeAfterSlider {...HERO_BEFORE_AFTER} loading="eager" />
+            <HeroSlideshow />
           </div>
           <span className="absolute -left-3 top-6 rounded-full bg-card px-4 py-2 text-sm font-semibold text-brown shadow-card">
             ✨ Same-week spots

@@ -9,7 +9,7 @@ import {
   PRICE_DISCLAIMER,
   summarizeSelections,
   totalPriceVaries,
-} from "./pricing";
+} from "../booking/pricing";
 
 /**
  * Transactional email via Azure Communication Services. Sends a confirmation

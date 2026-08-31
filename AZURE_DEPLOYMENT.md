@@ -20,7 +20,7 @@ account email/key/calendar ID are treated the same as any other secret below
 (stored in Key Vault, injected as env vars).
 
 This guide requires one code change (swapping the Resend SDK for the Azure
-Communication Services Email SDK in `src/lib/email.ts` / `package.json`,
+Communication Services Email SDK in `src/lib/integrations/email.ts` / `package.json`,
 and updating `.env.example`) — do that first, then provision the
 infrastructure below.
 
@@ -327,7 +327,7 @@ will break login.
 - **Backups:** Flexible Server takes automated backups (7-day retention by default, configurable up to 35 days) — no setup needed, but confirm the retention window matches your risk tolerance.
 - **Monitoring:** enable Application Insights on the App Service for request traces and error alerts (`az monitor app-insights component create` + wire the connection string into app settings).
 - **Rotating secrets:** update the value in Key Vault (`az keyvault secret set` with the same name creates a new version) and restart the App Service — no redeploy needed since the app only ever sees the resolved env var.
-- **Rate limiting:** the README notes the login lockout in [`src/lib/rate-limit.ts`](src/lib/rate-limit.ts) is in-memory. A single App Service instance is fine; if you scale to multiple instances, back it with the DB or Azure Cache for Redis so lockouts are shared across instances.
+- **Rate limiting:** the README notes the login lockout in [`src/lib/auth/rate-limit.ts`](src/lib/auth/rate-limit.ts) is in-memory. A single App Service instance is fine; if you scale to multiple instances, back it with the DB or Azure Cache for Redis so lockouts are shared across instances.
 
 **Rough monthly cost** at the sizes above: ~$13 (App Service B1) + ~$15
 (Postgres B1ms/32GB) + a few cents (Key Vault operations) + email sent at

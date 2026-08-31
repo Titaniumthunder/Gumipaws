@@ -1,4 +1,4 @@
-import { MARQUEE_ITEMS } from "@/lib/site";
+import { MARQUEE_ITEMS } from "@/content/site";
 
 /** Infinite scrolling marquee. The list is duplicated so the loop is seamless. */
 export default function Marquee() {

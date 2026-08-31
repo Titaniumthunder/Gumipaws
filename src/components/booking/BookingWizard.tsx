@@ -14,13 +14,13 @@ import {
   PRICE_DISCLAIMER,
   summarizeSelections,
   type Size,
-} from "@/lib/pricing";
+} from "@/lib/booking/pricing";
 import {
   BREEDS,
   GROOMERS,
   SIZE_OPTIONS,
   TIME_SLOTS,
-} from "@/lib/booking-constants";
+} from "@/lib/booking/constants";
 
 type FormState = {
   petName: string;

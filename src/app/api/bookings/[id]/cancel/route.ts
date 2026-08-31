@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { deleteCalendarEvent } from "@/lib/google-calendar";
-import { sendCancellationEmail, isEmailConfigured } from "@/lib/email";
+import { deleteCalendarEvent } from "@/lib/integrations/google-calendar";
+import { sendCancellationEmail, isEmailConfigured } from "@/lib/integrations/email";
 
 export const runtime = "nodejs";
 

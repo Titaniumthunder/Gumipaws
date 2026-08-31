@@ -18,3 +18,9 @@ next-env.d.ts
 
 # prisma
 prisma/*.db
+
+# Staging area for raw photos before prep-photos.sh optimizes them into public/gallery/
+incoming-photos
+
+# Personal Claude Code permissions; launch.json is shared, this is not
+.claude/settings.local.json

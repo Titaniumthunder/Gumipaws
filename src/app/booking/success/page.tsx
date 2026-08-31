@@ -7,7 +7,7 @@ import {
   PRICE_DISCLAIMER,
   summarizeSelections,
   totalPriceVaries,
-} from "@/lib/pricing";
+} from "@/lib/booking/pricing";
 
 export const runtime = "nodejs";
 // Always read fresh from the DB (survives refresh, not cached).

@@ -171,21 +171,40 @@ export const HOW_IT_WORKS = [
 ];
 
 /**
- * The GumiPaws logo, served from `public/gumipaws-hero.png` (see README).
- * It used to be the hero image; the hero now leads with a before/after
- * comparison, so the mark lives in the nav bar instead.
+ * The GumiPaws logo, shown in the nav on every page (public, booking, admin).
+ *
+ * `public/brand/gumipaws-logo.png` is a 256px copy — it renders at 32–40px, so
+ * anything larger is bytes every visitor downloads for nothing. The full-size
+ * master is kept at `assets/brand/gumipaws-logo-original.png`, which is outside
+ * `public/` and therefore never served. Re-export from the master if you ever
+ * need the mark bigger.
  */
-export const LOGO = "/gumipaws-hero.png";
+export const LOGO = "/brand/gumipaws-logo.png";
 
 /**
- * One dog's photos. `before` is optional: entries that have both render as a
- * drag-to-compare slider, entries with only an `after` render as a plain photo.
+ * One photo in the hero rotation or the gallery.
+ *
+ * There is no `before` field: the drag-to-compare slider was removed in favour
+ * of showing each transformation whole. The collage images already put the two
+ * states side by side with their own printed labels, which is what the slider
+ * was reconstructing — badly, since its badges fought the printed ones.
  */
 export type GalleryPhoto = {
   dogName: string;
-  /** Pre-groom shot. Omit until there actually is one. */
-  before?: string;
+  /** Path under `public`, so `public/gallery/x.jpg` is written `/gallery/x.jpg`. */
   after: string;
+  /**
+   * Describes the picture for screen readers, and shows if the image fails to
+   * load. Say what is actually pictured.
+   */
+  alt?: string;
+  /**
+   * How the photo fills its frame. "cover" crops to fill and suits a single
+   * portrait subject; "contain" fits the whole image in, letterboxed against
+   * the card background — needed for the side-by-side collages, where cropping
+   * would cut off half the story. Defaults to "cover".
+   */
+  fit?: "cover" | "contain";
 };
 
 /** One dog's video clip. Renders a player in the grid instead of photos. */
@@ -204,93 +223,134 @@ export type GalleryEntry = GalleryPhoto | GalleryClip;
 /* ---------------------------------------------------------------------------
  * ADDING YOUR OWN PHOTOS AND VIDEOS
  *
- * 1. Drop the files into `public/gallery/`.
+ * 1. Drop the files into `public/gallery/`. Resize first — `scripts/prep-photos.sh`
+ *    does it, or any export around 1600px wide is fine. Full-size phone photos
+ *    are several megabytes each and make the page crawl on mobile.
  * 2. Reference them by the path *after* `public`, so
- *    `public/gallery/jojo-after.jpg` is written `/gallery/jojo-after.jpg`.
- * 3. Add or edit an entry in GALLERY_ITEMS below. Three shapes are supported:
+ *    `public/gallery/rosie.jpg` is written `/gallery/rosie.jpg`.
+ * 3. Add an entry to GALLERY_ITEMS below. Two shapes are supported:
  *
- *      // both shots -> drag-to-compare slider
- *      { dogName: "Jojo", before: "/gallery/jojo-before.jpg",
- *                          after: "/gallery/jojo-after.jpg" }
- *
- *      // only one shot -> ordinary photo, no slider UI
- *      { dogName: "Milo", after: "/gallery/milo-after.jpg" }
+ *      // a photo
+ *      { dogName: "Rosie", after: "/gallery/rosie.jpg",
+ *        alt: "Rosie after her groom" }
  *
  *      // a clip -> video player
  *      { dogName: "Luna", video: "/gallery/luna.mp4",
  *                         poster: "/gallery/luna-poster.jpg" }
  *
- * Order in this array is the order in the grid. The first, fourth and last
- * cells are the large ones, so put your best shots there. Adding a seventh
- * entry is fine — it just flows into a normal-sized cell.
- *
- * No rebuild-time image processing happens, so resize before adding: roughly
- * 1600px wide for photos and keep clips short and under ~10MB, or the page
- * gets heavy.
+ * Add `fit: "contain"` to any picture that must be seen whole — a before/after
+ * collage, or anything wider than it is tall. Without it the photo is cropped
+ * to fill its frame, which suits a single dog but would slice a collage in half.
  * ------------------------------------------------------------------------ */
 
 /**
- * PLACEHOLDER PHOTOS — stock dogs, not GumiPaws clients, and the "before"/
- * "after" shots are unrelated images rather than a real pair. Swap every URL
- * below for real client photos (e.g. `/gallery/jojo-before.jpg`) as they come in.
+ * The hero slideshow — one transformation at a time, fading to the next every
+ * few seconds so a visitor sees several different dogs without touching
+ * anything.
+ *
+ * Each image is a before/after pair side by side with its labels printed in,
+ * which is why they are `fit: "contain"`: cropping one to fill the frame would
+ * cut off the half that makes the point.
+ *
+ * Keep the strongest first — it shows before any rotation happens, and it is
+ * the only one a visitor who prefers reduced motion ever sees.
  */
-export const HERO_BEFORE_AFTER: GalleryPhoto = {
-  dogName: "Biscuit",
-  before:
-    "https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=1000&q=80",
-  after:
-    "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=1000&q=80",
-};
+export const HERO_SLIDESHOW: GalleryPhoto[] = [
+  {
+    dogName: "Transformation 2",
+    after: "/gallery/transformation-2.jpg",
+    alt: "An apricot poodle before and after grooming: shaggy and uneven, then trimmed into a rounded, fluffy style",
+    fit: "contain",
+  },
+  {
+    dogName: "Transformation 4",
+    after: "/gallery/transformation-4.jpg",
+    alt: "A golden doodle before and after grooming: flat, tangled coat, then brushed out and evenly shaped",
+    fit: "contain",
+  },
+  {
+    dogName: "Transformation 3",
+    after: "/gallery/transformation-3.jpg",
+    alt: "A small white dog before and after grooming: damp and scruffy in a towel, then dry and neatly rounded",
+    fit: "contain",
+  },
+  {
+    dogName: "Transformation 1",
+    after: "/gallery/transformation-1.jpg",
+    alt: "A brown wire-haired doodle before and after grooming from two angles: matted and unkempt, then soft and full",
+    fit: "contain",
+  },
+];
 
 /**
- * Gallery entries, in grid order. Also PLACEHOLDER photos — see the note above.
- * A mix on purpose: three have a before shot and render as sliders, three are
- * plain photos, which is what the real library will look like for a while.
+ * Gallery entries, in the order shown. These render one at a time in a sliding
+ * carousel (GalleryCarousel.tsx), so the list can grow as long as you like.
+ *
+ * The four transformations lead because they are the strongest work; Jojo — the
+ * GumiPaws dog, and the reason the logo looks the way it does — follows.
+ *
+ * The transformations are `fit: "contain"` so both halves stay visible. Jojo's
+ * portraits are left on the default "cover", which fills the frame.
  */
 export const GALLERY_ITEMS: GalleryEntry[] = [
   {
-    dogName: "Jojo",
-    before:
-      "https://images.unsplash.com/photo-1477884213360-7e9d7dcc1e48?auto=format&fit=crop&w=800&q=80",
-    after:
-      "https://images.unsplash.com/photo-1591160690555-5debfba289f0?auto=format&fit=crop&w=800&q=80",
+    dogName: "Transformation 2",
+    after: "/gallery/transformation-2.jpg",
+    alt: "An apricot poodle before and after grooming: shaggy and uneven, then trimmed into a rounded, fluffy style",
+    fit: "contain",
   },
   {
-    dogName: "Milo",
-    after:
-      "https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=800&q=80",
+    dogName: "Transformation 4",
+    after: "/gallery/transformation-4.jpg",
+    alt: "A golden doodle before and after grooming: flat, tangled coat, then brushed out and evenly shaped",
+    fit: "contain",
   },
   {
-    dogName: "Poppy",
-    after:
-      "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=800&q=80",
+    dogName: "Transformation 3",
+    after: "/gallery/transformation-3.jpg",
+    alt: "A small white dog before and after grooming: damp and scruffy in a towel, then dry and neatly rounded",
+    fit: "contain",
   },
   {
-    dogName: "Bear",
-    before:
-      "https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=800&q=80",
-    after:
-      "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    dogName: "Nori",
-    after:
-      "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    dogName: "Mochi",
-    before:
-      "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?auto=format&fit=crop&w=800&q=80",
-    after:
-      "https://images.unsplash.com/photo-1534361960057-19889db9621e?auto=format&fit=crop&w=800&q=80",
+    dogName: "Transformation 1",
+    after: "/gallery/transformation-1.jpg",
+    alt: "A brown wire-haired doodle before and after grooming from two angles: matted and unkempt, then soft and full",
+    fit: "contain",
   },
 
-  // The video slot. Drop a clip into `public/gallery/`, then uncomment and
-  // point this at it. Left commented out because an entry pointing at a file
-  // that isn't there yet renders an empty player.
-  // {
-  //   dogName: "Luna",
-  //   video: "/gallery/luna.mp4",
-  //   poster: "/gallery/luna-poster.jpg",
-  // },
+  {
+    dogName: "Jojo",
+    after: "/gallery/jojo-fresh-groom.jpg",
+    alt: "Jojo, freshly groomed and smiling, riding home from GumiPaws",
+  },
+  {
+    dogName: "Jojo",
+    after: "/gallery/jojo-car-portrait.jpg",
+    alt: "Jojo sitting up in the car, coat brushed out after a groom",
+  },
+  {
+    dogName: "Jojo",
+    after: "/gallery/jojo-lawn-alert.jpg",
+    alt: "Jojo resting on the lawn by the flowerbeds",
+  },
+  {
+    dogName: "Jojo",
+    after: "/gallery/jojo-car-sit.jpg",
+    alt: "Jojo in the back seat, freshly bathed and blow-dried",
+  },
+  {
+    dogName: "Jojo",
+    after: "/gallery/jojo-blanket.jpg",
+    alt: "Jojo stretched out on a blanket with a favourite toy",
+  },
+  {
+    dogName: "Jojo",
+    after: "/gallery/jojo-lawn-rest.jpg",
+    alt: "Jojo lying in the sun on the back lawn",
+  },
+  {
+    dogName: "Jojo",
+    after: "/gallery/jojo-nap.jpg",
+    alt: "Jojo fast asleep among soft toys after a long spa day",
+  },
 ];

@@ -1,4 +1,4 @@
-import { SERVICE_CARDS } from "@/lib/site";
+import { SERVICE_CARDS } from "@/content/site";
 
 export default function Services() {
   return (

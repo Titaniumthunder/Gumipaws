@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { summarizeSelections } from "@/lib/pricing";
-import { GROOMERS } from "@/lib/booking-constants";
+import { summarizeSelections } from "@/lib/booking/pricing";
+import { GROOMERS } from "@/lib/booking/constants";
 import {
   listCalendarEvents,
   type ExternalCalendarEvent,
-} from "@/lib/google-calendar";
+} from "@/lib/integrations/google-calendar";
 import AdminHeader from "@/components/admin/AdminHeader";
 import CalendarToolbar from "@/components/admin/CalendarToolbar";
 

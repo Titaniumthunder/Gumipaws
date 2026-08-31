@@ -5,7 +5,7 @@ import {
   packageLabel,
   summarizeSelections,
   totalPriceVaries,
-} from "@/lib/pricing";
+} from "@/lib/booking/pricing";
 import CancelBooking from "@/components/booking/CancelBooking";
 
 export const runtime = "nodejs";

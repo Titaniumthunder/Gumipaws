@@ -1,7 +1,7 @@
 import type { Booking } from "@prisma/client";
-import { prisma } from "./prisma";
-import { upsertCalendarEvent, isCalendarConfigured } from "./google-calendar";
-import { sendBookingEmails, isEmailConfigured } from "./email";
+import { prisma } from "../prisma";
+import { upsertCalendarEvent, isCalendarConfigured } from "../integrations/google-calendar";
+import { sendBookingEmails, isEmailConfigured } from "../integrations/email";
 
 /**
  * Run the two third-party integrations (Google Calendar + email) for a booking

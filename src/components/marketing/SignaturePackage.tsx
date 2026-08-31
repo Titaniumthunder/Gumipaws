@@ -1,4 +1,4 @@
-import { FULL_GROOM_CHECKLIST, FULL_GROOM_SIZE_PRICING } from "@/lib/site";
+import { FULL_GROOM_CHECKLIST, FULL_GROOM_SIZE_PRICING } from "@/content/site";
 
 export default function SignaturePackage() {
   return (

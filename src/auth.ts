@@ -8,7 +8,7 @@ import {
   checkRateLimit,
   recordFailure,
   resetRateLimit,
-} from "./lib/rate-limit";
+} from "./lib/auth/rate-limit";
 
 /**
  * Staff authenticate with a short numeric PIN only (no email/username). The PIN

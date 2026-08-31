@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { runBookingIntegrations } from "@/lib/booking-integrations";
+import { runBookingIntegrations } from "@/lib/booking/sync";
 
 export const runtime = "nodejs";
 

@@ -1,4 +1,4 @@
-import { BUSINESS, NAV_LINKS, SERVICE_CARDS } from "@/lib/site";
+import { BUSINESS, NAV_LINKS, SERVICE_CARDS } from "@/content/site";
 
 export default function CTAFooter() {
   return (

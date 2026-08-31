@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
-import { ROLE_HOME, type Role } from "@/lib/access";
+import { ROLE_HOME, type Role } from "@/lib/auth/access";
 
 const PIN_MAX = 10;
 

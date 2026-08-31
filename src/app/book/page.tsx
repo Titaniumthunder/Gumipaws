@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import BookingWizard from "@/components/booking/BookingWizard";
+import { LOGO } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "Book a spa day — GumiPaws",
@@ -20,7 +21,7 @@ export default function BookPage() {
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/gumipaws-hero.png"
+              src={LOGO}
               alt="GumiPaws logo"
               className="h-10 w-10 rounded-full bg-cream-deep object-cover ring-1 ring-black/5"
             />

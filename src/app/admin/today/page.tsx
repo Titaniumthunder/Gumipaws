@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { summarizeSelections } from "@/lib/pricing";
+import { summarizeSelections } from "@/lib/booking/pricing";
 import AdminHeader from "@/components/admin/AdminHeader";
 import TodayCard from "@/components/admin/TodayCard";
 

@@ -1,9 +1,9 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { createBookingSchema } from "@/lib/booking-schema";
-import { computeEstimate } from "@/lib/pricing";
-import { runBookingIntegrations } from "@/lib/booking-integrations";
+import { createBookingSchema } from "@/lib/booking/schema";
+import { computeEstimate } from "@/lib/booking/pricing";
+import { runBookingIntegrations } from "@/lib/booking/sync";
 
 // This route talks to the DB and third-party APIs — always run on Node.
 export const runtime = "nodejs";

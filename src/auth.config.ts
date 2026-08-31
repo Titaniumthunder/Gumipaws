@@ -1,5 +1,5 @@
 import type { NextAuthConfig } from "next-auth";
-import type { Role } from "./lib/access";
+import type { Role } from "./lib/auth/access";
 
 /**
  * Edge-safe auth config. Contains NO database or bcrypt imports so it can run

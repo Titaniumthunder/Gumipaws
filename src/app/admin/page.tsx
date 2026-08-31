@@ -6,7 +6,7 @@ import {
   formatUSDPlus,
   summarizeSelections,
   totalPriceVaries,
-} from "@/lib/pricing";
+} from "@/lib/booking/pricing";
 import AdminHeader from "@/components/admin/AdminHeader";
 import PaidToggle from "@/components/admin/PaidToggle";
 

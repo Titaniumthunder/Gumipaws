@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { ADD_ON_BY_ID, coatTypeForBreed, isPackageAllowed, SIZES } from "./pricing";
-import { GROOMERS, TIME_SLOTS } from "./booking-constants";
+import { GROOMERS, TIME_SLOTS } from "./constants";
 
 /**
  * Validation for the POST /api/bookings payload. The server re-derives the

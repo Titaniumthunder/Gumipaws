@@ -1,4 +1,4 @@
-import { ADD_ONS, PRICING_COLUMNS, SIZE_FOOTNOTE } from "@/lib/site";
+import { ADD_ONS, PRICING_COLUMNS, SIZE_FOOTNOTE } from "@/content/site";
 
 export default function PricingTable() {
   return (

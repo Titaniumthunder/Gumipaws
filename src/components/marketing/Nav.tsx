@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BUSINESS, LOGO, NAV_LINKS } from "@/lib/site";
+import { BUSINESS, LOGO, NAV_LINKS } from "@/content/site";
 
 /** Sticky top navigation with a mobile drawer. */
 export default function Nav() {

@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
 import { authConfig } from "./auth.config";
-import { requiredRoles } from "./lib/access";
+import { requiredRoles } from "./lib/auth/access";
 
 // Edge middleware uses the DB-free config; it only reads the JWT cookie.
 const { auth } = NextAuth(authConfig);

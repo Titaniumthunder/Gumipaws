@@ -95,7 +95,7 @@ creation (write it down and hand it over). Roles: **Worker**, **Manager**,
 
 > **Rate limiting:** because PINs are short, the login route locks out an IP
 > after **5 failed attempts within 10 minutes** (in-memory sliding window in
-> [`src/lib/rate-limit.ts`](src/lib/rate-limit.ts)). For a multi-instance
+> [`src/lib/auth/rate-limit.ts`](src/lib/auth/rate-limit.ts)). For a multi-instance
 > deployment, back this with the DB or Redis — the API surface stays the same.
 
 ### Google Calendar (service account)
@@ -151,7 +151,7 @@ service account — no per-user OAuth.
 
 ## Pricing logic
 
-The price table lives in [`src/lib/pricing.ts`](src/lib/pricing.ts) as plain
+The price table lives in [`src/lib/booking/pricing.ts`](src/lib/booking/pricing.ts) as plain
 constants. `computeEstimate(packageId, addOnIds, size)` is the **single source of
 truth**:
 
@@ -183,7 +183,7 @@ time → Contact → Review) with a **live running total** shown from step 2 onw
 
 1. `POST /api/bookings` validates the payload (Zod), recomputes
    `estimatedTotal`, and creates a `Booking` with status `confirmed`.
-2. It then runs integrations ([`booking-integrations.ts`](src/lib/booking-integrations.ts)):
+2. It then runs integrations ([`booking/sync.ts`](src/lib/booking/sync.ts)):
    creates a Google Calendar event (saving `googleCalendarEventId`) and sends
    confirmation emails (Azure Communication Services) to the customer and business.
 3. **Third-party failures never block the customer** — any error is written to
@@ -263,14 +263,31 @@ The last remaining Admin can't be demoted or removed (safety guard).
 
 ## Project structure
 
+Two things are worth knowing before you go looking for anything:
+
+- **`src/content/site.ts` holds everything you would want to reword or reprice** —
+  business details, service blurbs, the price tables, and the gallery. It is plain
+  data with no logic, and it is the only file most day-to-day edits touch.
+- **`src/lib/` is grouped by concern** (`booking/`, `integrations/`, `auth/`), so
+  the folder name tells you what is inside rather than making you open ten files.
+
 ```
+assets/                    # source files, NOT served to visitors
+  brand/
+    gumipaws-logo-original.png  # full-res master (1254px)
 prisma/
   schema.prisma            # Booking (package + addOns, cancellationToken) + StaffUser
-public/
-  gumipaws-hero.png        # homepage hero logo (add this file — see public/README.md)
   migrations/              # bundled initial migration
   seed.ts                  # seeds the initial ADMIN from ADMIN_NAME/ADMIN_PIN
+public/                    # served at the site root, so public/brand/x.png is /brand/x.png
+  brand/
+    gumipaws-logo.png      # 256px copy used in the nav (renders at 32–40px)
+  gallery/                 # grooming photos & clips — see scripts/prep-photos.sh
+scripts/
+  prep-photos.sh           # resize/convert phone photos into public/gallery/
 src/
+  content/
+    site.ts                # ALL editable copy, prices, and gallery entries
   app/
     page.tsx               # public marketing page (assembles sections)
     booking/success/       # DB-backed confirmation page
@@ -289,14 +306,18 @@ src/
     booking/               # BookingWizard (5-step), CancelBooking
     admin/                 # header, controls, paid toggle, today card, staff mgr
   lib/
-    pricing.ts             # price table + computeEstimate (source of truth)
-    booking-schema.ts      # Zod validation for the API
-    access.ts              # roles + per-path access rules (edge-safe)
-    rate-limit.ts          # per-IP login lockout
-    google-calendar.ts     # service-account calendar create + delete
-    email.ts               # ACS emails (confirm, cancel, business)
-    booking-integrations.ts# orchestrates + records sync outcomes
-    site.ts                # static marketing content
+    booking/
+      pricing.ts           # price table + computeEstimate (source of truth)
+      schema.ts            # Zod validation for the API
+      constants.ts         # groomers, time slots
+      sync.ts              # runs calendar+email, records the outcome on the row
+    integrations/
+      google-calendar.ts   # service-account calendar create + delete
+      email.ts             # ACS emails (confirm, cancel, business)
+    auth/
+      access.ts            # roles + per-path access rules (edge-safe)
+      rate-limit.ts        # per-IP login lockout
+    prisma.ts              # the shared Prisma client
   auth.ts / auth.config.ts # NextAuth PIN setup (edge-safe split, role in JWT)
   middleware.ts            # protects /admin with role-based 403s
   types/next-auth.d.ts     # session/user role typing

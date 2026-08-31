@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Role } from "@/lib/access";
+import type { Role } from "@/lib/auth/access";
 
 type Staff = { id: string; name: string; role: Role };
 

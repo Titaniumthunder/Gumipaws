@@ -1,5 +1,6 @@
 import Link from "next/link";
-import type { Role } from "@/lib/access";
+import type { Role } from "@/lib/auth/access";
+import { LOGO } from "@/content/site";
 import SignOutButton from "./SignOutButton";
 
 /** Top bar for authenticated admin pages, with role-aware navigation. */
@@ -28,7 +29,7 @@ export default function AdminHeader({
           <Link href="/admin/today" className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/gumipaws-hero.png"
+              src={LOGO}
               alt="GumiPaws logo"
               className="h-8 w-8 rounded-full bg-cream-deep object-cover ring-1 ring-black/5"
             />

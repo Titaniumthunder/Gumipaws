@@ -1,4 +1,4 @@
-import { HOW_IT_WORKS } from "@/lib/site";
+import { HOW_IT_WORKS } from "@/content/site";
 
 export default function HowItWorks() {
   return (

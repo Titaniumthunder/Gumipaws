@@ -1,11 +1,11 @@
 import { google } from "googleapis";
 import type { Booking } from "@prisma/client";
-import { TIME_SLOTS } from "./booking-constants";
+import { TIME_SLOTS } from "../booking/constants";
 import {
   formatUSDPlus,
   summarizeSelections,
   totalPriceVaries,
-} from "./pricing";
+} from "../booking/pricing";
 
 /**
  * Google Calendar integration via a service account (no per-user OAuth).
