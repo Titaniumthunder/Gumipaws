@@ -321,36 +321,43 @@ export const GALLERY_ITEMS: GalleryEntry[] = [
   {
     dogName: "Jojo",
     after: "/gallery/jojo-fresh-groom.jpg",
+    fit: "contain",
     alt: "Jojo, freshly groomed and smiling, riding home from GumiPaws",
   },
   {
     dogName: "Jojo",
     after: "/gallery/jojo-car-portrait.jpg",
+    fit: "contain",
     alt: "Jojo sitting up in the car, coat brushed out after a groom",
   },
   {
     dogName: "Jojo",
     after: "/gallery/jojo-lawn-alert.jpg",
+    fit: "contain",
     alt: "Jojo resting on the lawn by the flowerbeds",
   },
   {
     dogName: "Jojo",
     after: "/gallery/jojo-car-sit.jpg",
+    fit: "contain",
     alt: "Jojo in the back seat, freshly bathed and blow-dried",
   },
   {
     dogName: "Jojo",
     after: "/gallery/jojo-blanket.jpg",
+    fit: "contain",
     alt: "Jojo stretched out on a blanket with a favourite toy",
   },
   {
     dogName: "Jojo",
     after: "/gallery/jojo-lawn-rest.jpg",
+    fit: "contain",
     alt: "Jojo lying in the sun on the back lawn",
   },
   {
     dogName: "Jojo",
     after: "/gallery/jojo-nap.jpg",
+    fit: "contain",
     alt: "Jojo fast asleep among soft toys after a long spa day",
   },
 ];

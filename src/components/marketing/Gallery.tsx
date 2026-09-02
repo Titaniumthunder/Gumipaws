@@ -9,8 +9,10 @@ import GalleryCarousel from "./GalleryCarousel";
  */
 export default function Gallery() {
   return (
-    <section id="gallery" className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-      <div className="mb-10 text-center">
+    /* The heading stays in the page's column; the carousel below runs the full
+       width of the window so the photos are as large as the screen allows. */
+    <section id="gallery" className="py-16">
+      <div className="mx-auto mb-10 max-w-6xl px-4 text-center sm:px-6">
         <p className="text-sm font-semibold uppercase tracking-widest text-gold">
           Gallery
         </p>
