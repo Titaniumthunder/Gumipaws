@@ -2,24 +2,30 @@ import Nav from "@/components/marketing/Nav";
 import Hero from "@/components/marketing/Hero";
 import TrustStrip from "@/components/marketing/TrustStrip";
 import Testimonial from "@/components/marketing/Testimonial";
-import Marquee from "@/components/marketing/Marquee";
 import Services from "@/components/marketing/Services";
-import SignaturePackage from "@/components/marketing/SignaturePackage";
 import PhotoBand from "@/components/marketing/PhotoBand";
-import HowItWorks from "@/components/marketing/HowItWorks";
-import Gallery from "@/components/marketing/Gallery";
-import BookingSection from "@/components/marketing/BookingSection";
 import CTAFooter from "@/components/marketing/CTAFooter";
 
 /**
- * The homepage tells the story; the numbers live on /pricing.
+ * The homepage is now a doorway, not the whole building.
  *
- * The pricing table used to sit in the middle of this page, which made it long
- * and put a wall of figures between the services and everything after them.
- * The service cards describe the work and link through instead.
+ * It used to carry every section the site had — the full groom explainer, the
+ * process, the gallery, the booking band — so a visitor had to scroll past all
+ * of it to reach anything. Those sections have moved to pages of their own, and
+ * the nav gets people there in one click, which is faster than scrolling.
  *
- * Sections alternate on purpose — full-width photography between the card
- * grids, and a call to action after each stretch rather than only at the end.
+ * What is left is the minimum needed to decide whether to keep going: who we
+ * are (Hero), that other people trust us (TrustStrip), what we actually do
+ * (Services), and a look at the work (PhotoBand). Testimonial sits between the
+ * trust strip and the services for when there is a real quote to put there; it
+ * renders nothing until then.
+ *
+ * The temptation will be to add "just one more" section back. Don't — the
+ * length is the feature.
+ *
+ * No metadata export here: the homepage title and description in
+ * src/app/layout.tsx are already written for this page, and repeating them
+ * would mean two places to keep in step.
  */
 export default function HomePage() {
   return (
@@ -28,13 +34,8 @@ export default function HomePage() {
       <Hero />
       <TrustStrip />
       <Testimonial />
-      <Marquee />
       <Services />
-      <SignaturePackage />
       <PhotoBand />
-      <HowItWorks />
-      <Gallery />
-      <BookingSection />
       <CTAFooter />
     </main>
   );

@@ -47,7 +47,7 @@ export default function SignaturePackage() {
               {CTA.primary}
             </a>
             <a
-              href="/pricing"
+              href="/services"
               className="rounded-full border border-brown/20 px-6 py-3 font-semibold text-brown transition hover:bg-card"
             >
               {CTA.secondary}

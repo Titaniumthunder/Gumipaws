@@ -66,7 +66,7 @@ export default function CTAFooter() {
             <ul className="mt-3 space-y-2 text-sm text-brown-soft">
               {SERVICE_CARDS.filter((c) => !c.accent).map((c) => (
                 <li key={c.title}>
-                  <a href="/#services" className="hover:text-brown">
+                  <a href="/services" className="hover:text-brown">
                     {c.title}
                   </a>
                 </li>

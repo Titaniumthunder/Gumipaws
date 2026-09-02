@@ -8,20 +8,22 @@ import { CTA, SERVICE_CARDS } from "@/content/site";
  * is and send anyone who wants numbers to /pricing, where every price is still
  * posted in full.
  */
-export default function Services() {
+export default function Services({ heading = true }: { heading?: boolean }) {
   const featured = SERVICE_CARDS.filter((c) => c.featured);
   const rest = SERVICE_CARDS.filter((c) => !c.featured);
 
   return (
     <section id="services" className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
-      <div className="mb-14 text-center">
-        <p className="text-sm font-semibold uppercase tracking-widest text-gold">
-          Services
-        </p>
-        <h2 className="mt-3 font-heading text-4xl text-brown sm:text-5xl">
-          Everything your pup needs
-        </h2>
-      </div>
+      {heading && (
+        <div className="mb-14 text-center">
+          <p className="text-sm font-semibold uppercase tracking-widest text-gold">
+            Services
+          </p>
+          <h2 className="mt-3 font-heading text-4xl text-brown sm:text-5xl">
+            Everything your pup needs
+          </h2>
+        </div>
+      )}
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {featured.map((card) => (
@@ -78,7 +80,7 @@ export default function Services() {
           {CTA.primary}
         </a>
         <a
-          href="/pricing"
+          href="/services"
           className="rounded-full border border-brown/20 px-8 py-4 font-semibold text-brown transition hover:bg-card"
         >
           {CTA.secondary}

@@ -1,23 +1,29 @@
 /**
- * A full-width photo between two card sections.
+ * A full-width photograph between two sections.
  *
- * The middle of the page had settled into one rhythm — small label, heading,
- * row of cards, repeated — so each section stopped registering as its own
- * thing. An edge-to-edge photograph breaks that up and lets the grooming work
- * carry a stretch of the page on its own.
+ * The middle of a page settles into one rhythm — label, heading, cards,
+ * repeated — and each block stops registering as its own thing. An
+ * edge-to-edge photograph breaks that up.
+ *
+ * The photo is landscape on purpose. A wide band crops a portrait shot to a
+ * narrow horizontal strip, which is what happened when this used one of the
+ * 900x1600 phone photos.
  */
+const PHOTO = "/gallery/jojo-nap.jpg";
+const ALT = "Jojo fast asleep among soft toys after a long spa day";
+
 export default function PhotoBand() {
   return (
-    <section aria-label="A recent groom" className="relative">
+    <section aria-label="After a groom" className="relative">
       <div className="relative h-[280px] overflow-hidden sm:h-[360px] lg:h-[420px]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/gallery/jojo-lawn-alert.jpg"
-          alt="Jojo, freshly groomed, sitting alert on a sunny lawn"
+          src={PHOTO}
+          alt={ALT}
           loading="lazy"
           className="h-full w-full object-cover object-center"
         />
-        {/* Keeps the text legible whatever the photo is doing underneath. */}
+        {/* Keeps the line legible whatever the photo is doing underneath. */}
         <div
           aria-hidden
           className="absolute inset-0 bg-gradient-to-t from-brown/70 via-brown/20 to-transparent"

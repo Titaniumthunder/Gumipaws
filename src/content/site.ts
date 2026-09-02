@@ -10,17 +10,45 @@ export const BUSINESS = {
 };
 
 /**
- * Absolute hrefs, not bare fragments: pricing now lives on its own page, so a
- * visitor can be on /pricing or /book when they use these. "#services" would
- * simply do nothing from there.
+ * The site is a handful of short pages rather than one long homepage, so these
+ * are routes, not fragments. Four items, deliberately: every extra one is
+ * another decision at the top of every page.
  */
 export const NAV_LINKS = [
-  { label: "Services", href: "/#services" },
-  { label: "Full Groom", href: "/#full-groom" },
-  { label: "Pricing", href: "/pricing" },
-  { label: "How it works", href: "/#how-it-works" },
-  { label: "Gallery", href: "/#gallery" },
-  { label: "Visit", href: "/#visit" },
+  { label: "About", href: "/about" },
+  { label: "Services", href: "/services" },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Contact", href: "/contact" },
+];
+
+/**
+ * The About page's story. Deliberately claims nothing the business has not
+ * already said elsewhere on the site — no invented credentials, awards, staff
+ * count or years in business. Replace with the real story when you have it.
+ */
+export const ABOUT = {
+  lead: "GumiPaws is a boutique grooming spa for dogs who would rather be anywhere else — and leave wishing they could stay.",
+  body: [
+    "Every groom starts with a conversation. We ask about coat goals, sensitivities, and what your dog is like on a bad day, because a haircut is easier when nobody is frightened.",
+    "Then the work itself: a warm hydro-bath sized to the coat, a tearless shampoo matched to the skin, a hand-finished cut, and the small things that are easy to skip — ears, nails, paw pads, a finishing spritz.",
+    "Prices are posted in full, and the final figure is confirmed at drop-off before anything begins. No deposit, and you pay in person at pickup.",
+  ],
+};
+
+/** Short, factual promises. Used on the About page. */
+export const PROMISES = [
+  {
+    title: "Posted prices",
+    blurb: "Every price is on the site. We confirm the final figure at drop-off, before any work starts.",
+  },
+  {
+    title: "One groomer, start to finish",
+    blurb: "The person who greets your dog is the person who finishes them, so nothing gets lost in a handover.",
+  },
+  {
+    title: "No deposit",
+    blurb: "Book online in a couple of minutes and pay in person at pickup.",
+  },
 ];
 
 export const MARQUEE_ITEMS = [
@@ -103,7 +131,7 @@ export const SERVICE_CARDS = [
       "De-shedding, nail trims, teeth brushing, a blueberry facial and more — add any to a groom.",
     /** Add-ons are chosen inside the booking flow, so this card points at the
         posted add-on list rather than starting a booking. */
-    href: "/pricing",
+    href: "/services",
   },
   {
     title: "The Boutique",
