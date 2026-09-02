@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CTA } from "@/content/site";
 
 /**
  * Homepage CTA band for booking. The wizard itself lives on its own page at
@@ -13,7 +14,7 @@ export default function BookingSection() {
           Book
         </p>
         <h2 className="mt-2 font-heading text-3xl text-brown sm:text-4xl">
-          Book a spa day
+          {CTA.primary}
         </h2>
         <p className="mx-auto mt-4 max-w-md text-brown-soft">
           Pick your services, tell us about your pup, and choose a time.
@@ -43,7 +44,7 @@ export default function BookingSection() {
           href="/book"
           className="mt-8 inline-block rounded-full bg-blush px-10 py-4 font-heading text-lg text-white shadow-card transition hover:bg-blush/90"
         >
-          Start booking →
+          {CTA.primary}
         </Link>
         <p className="mt-3 text-xs text-brown-soft">
           Takes about two minutes. No account needed.

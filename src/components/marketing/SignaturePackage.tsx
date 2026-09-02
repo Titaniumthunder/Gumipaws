@@ -1,5 +1,14 @@
-import { FULL_GROOM_CHECKLIST, FULL_GROOM_SIZE_PRICING } from "@/content/site";
+import { CTA, FULL_GROOM_CHECKLIST } from "@/content/site";
 
+/**
+ * The Full Groom, explained once.
+ *
+ * This section used to carry its own "full groom by size" price list, the same
+ * five rows the pricing table repeats a screen later. Saying it twice made the
+ * page longer without telling anyone anything new, so the prices live in the
+ * pricing table alone and a photograph takes the space — which also breaks up
+ * the run of card grids through the middle of the page.
+ */
 export default function SignaturePackage() {
   return (
     <section id="full-groom" className="bg-cream-deep py-16">
@@ -29,29 +38,31 @@ export default function SignaturePackage() {
               </li>
             ))}
           </ul>
+
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <a
+              href="/book"
+              className="rounded-full bg-blush px-6 py-3 font-semibold text-white shadow-card transition hover:bg-blush/90"
+            >
+              {CTA.primary}
+            </a>
+            <a
+              href="#pricing"
+              className="rounded-full border border-brown/20 px-6 py-3 font-semibold text-brown transition hover:bg-card"
+            >
+              {CTA.secondary}
+            </a>
+          </div>
         </div>
 
-        <div className="rounded-4xl bg-card p-8 shadow-soft">
-          <h3 className="font-heading text-xl text-brown">Full groom by size</h3>
-          <ul className="mt-5 divide-y divide-black/5">
-            {FULL_GROOM_SIZE_PRICING.map((row) => (
-              <li
-                key={row.size}
-                className="flex items-center justify-between py-3"
-              >
-                <span className="text-brown-soft">{row.size}</span>
-                <span className="font-heading text-lg text-brown">
-                  {row.price}
-                </span>
-              </li>
-            ))}
-          </ul>
-          <a
-            href="/book"
-            className="mt-6 block rounded-full bg-blush px-6 py-3 text-center font-semibold text-white shadow-card transition hover:bg-blush/90"
-          >
-            Book the full groom
-          </a>
+        <div className="h-[380px] overflow-hidden rounded-4xl bg-card shadow-soft md:h-[440px]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/gallery/transformation-3.jpg"
+            alt="A small white dog before and after a full groom: damp and scruffy in a towel, then dry and neatly rounded"
+            loading="lazy"
+            className="h-full w-full object-contain"
+          />
         </div>
       </div>
     </section>

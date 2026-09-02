@@ -27,21 +27,46 @@ export const MARQUEE_ITEMS = [
   "Honest, posted prices",
 ];
 
-/** 8 cards for the services grid. `accent` flags the gradient boutique card. */
+/**
+ * Every call to action on the site draws its wording from here, so the same
+ * action always reads the same way. Before this, one journey could offer "Book
+ * a spa day", "Book this", "Book the full groom" and "Start booking" for the
+ * identical destination, which made them look like four different things.
+ */
+export const CTA = {
+  /** The one primary action. Anything that leads to /book uses this. */
+  primary: "Book an Appointment",
+  /** The secondary action, for people not ready to book yet. */
+  secondary: "View Pricing",
+  /** Service cards: name the service so the choice is explicit. */
+  choose: (service: string) => `Choose ${service}`,
+};
+
+/**
+ * The services grid. `accent` flags the gradient boutique card.
+ *
+ * `featured` marks the four services shown as cards on the homepage. The rest
+ * stay in the list — they still fill the footer and the "more services"
+ * dropdown — but eight cards in a row read as clutter, especially stacked on a
+ * phone.
+ */
 export const SERVICE_CARDS = [
   {
     title: "Full Groom Package",
+    featured: true,
     price: "$109+",
     badge: "MOST LOVED",
     blurb: "Bath, haircut, style, nails, ears, and a spritz of finish.",
   },
   {
     title: "Bath & Brush",
+    featured: true,
     price: "$50+",
     blurb: "Warm hydro-bath, tearless shampoo, blow-out, and brush.",
   },
   {
     title: "Puppy's First Groom",
+    featured: true,
     price: "$40+",
     blurb: "A gentle intro to the spa for pups under six months.",
   },
@@ -64,6 +89,16 @@ export const SERVICE_CARDS = [
     title: "Teeth Brushing",
     price: "$12+",
     blurb: "Fresh breath and a healthy smile between vet visits.",
+  },
+  {
+    title: "Add-ons",
+    featured: true,
+    price: "$5+",
+    blurb:
+      "De-shedding, nail trims, teeth brushing, a blueberry facial and more — add any to a groom.",
+    /** Add-ons are chosen inside the booking flow, so this card points at the
+        posted add-on list rather than starting a booking. */
+    href: "#pricing",
   },
   {
     title: "The Boutique",

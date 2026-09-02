@@ -1,4 +1,4 @@
-import { BUSINESS, NAV_LINKS, SERVICE_CARDS } from "@/content/site";
+import { BUSINESS, CTA, NAV_LINKS, SERVICE_CARDS } from "@/content/site";
 
 export default function CTAFooter() {
   return (
@@ -18,7 +18,7 @@ export default function CTAFooter() {
               href="/book"
               className="rounded-full bg-white px-6 py-3 font-semibold text-blush shadow-card transition hover:bg-cream"
             >
-              Book a spa day
+              {CTA.primary}
             </a>
             <a
               href={BUSINESS.phoneHref}

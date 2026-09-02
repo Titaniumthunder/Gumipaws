@@ -53,13 +53,17 @@ const EMPTY: FormState = {
   notes: "",
 };
 
+/**
+ * Four steps, not six. Package and add-ons were adjacent screens asking the
+ * same question ("what do you want done?"), and contact and review were a form
+ * followed immediately by a read-only copy of it. Merging each pair drops two
+ * taps without dropping a single field.
+ */
 const STEP_LABELS = [
-  "Breed & size",
-  "Package",
-  "Add-ons",
-  "Groomer & time",
-  "Contact",
-  "Review",
+  "Your Dog",
+  "Services",
+  "Date & Groomer",
+  "Contact & Review",
 ];
 
 /** Local YYYY-MM-DD for the date input's `min` (today). */
@@ -75,7 +79,7 @@ function resolvePackage(choice: string | null): string | null {
 }
 
 export default function BookingWizard() {
-  const [step, setStep] = useState(0); // 0..5
+  const [step, setStep] = useState(0); // 0..3
   const [form, setForm] = useState<FormState>(EMPTY);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -122,17 +126,16 @@ export default function BookingWizard() {
         if (!form.size) return "Please choose a size.";
         return null;
       case 1:
-        // A choice is required, but "skip" is a valid choice.
+        // A choice is required, but "skip" is a valid choice. Add-ons stay
+        // optional, so nothing else on this step is checked.
         return form.packageChoice === null
           ? "Please choose a package, or select “Skip”."
           : null;
       case 2:
-        return null; // add-ons optional
-      case 3:
         if (!form.date) return "Please choose a date.";
         if (!form.time) return "Please choose a time.";
         return null;
-      case 4:
+      case 3:
         if (!form.ownerName.trim()) return "Please enter your name.";
         if (!form.phone.trim()) return "Please enter your phone number.";
         if (!/^\S+@\S+\.\S+$/.test(form.email))
@@ -159,7 +162,7 @@ export default function BookingWizard() {
   }
 
   async function submit() {
-    for (let s = 0; s <= 4; s++) {
+    for (let s = 0; s <= 3; s++) {
       const err = validateStep(s);
       if (err) {
         setError(err);
@@ -263,7 +266,7 @@ export default function BookingWizard() {
         </div>
       )}
 
-      {/* Step 1 — Breed & size */}
+      {/* Step 1 — Your dog */}
       {step === 0 && (
         <Step title="Tell us about your pup">
           <Field label="Pet name" required>
@@ -347,173 +350,172 @@ export default function BookingWizard() {
         </Step>
       )}
 
-      {/* Step 2 — Package */}
+      {/* Step 2 — Services: a package, then optional add-ons */}
       {step === 1 && (
-        <Step
-          title="Choose a package"
-          hint="Prices shown for your dog's size. Pick one, or skip to add-ons only."
-        >
-          <div className="space-y-3">
-            {sizeValid &&
-              packageOptions(form.size as Size, coat).map((opt) => {
-                const active = form.packageChoice === opt.id;
-                const isOpen = expanded.includes(opt.id);
-                return (
-                  <div
-                    key={opt.id}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => set("packageChoice", opt.id)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        set("packageChoice", opt.id);
-                      }
-                    }}
-                    aria-pressed={active}
-                    className={`${packageCard(active)} cursor-pointer`}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <div className="font-heading text-lg">{opt.label}</div>
-                        <div
-                          className={`mt-1 text-sm ${
+        <div className="space-y-8">
+          <Step
+            title="Choose a package"
+            hint="Prices shown for your dog's size. Pick one, or skip to add-ons only."
+          >
+            <div className="space-y-3">
+              {sizeValid &&
+                packageOptions(form.size as Size, coat).map((opt) => {
+                  const active = form.packageChoice === opt.id;
+                  const isOpen = expanded.includes(opt.id);
+                  return (
+                    <div
+                      key={opt.id}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => set("packageChoice", opt.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          set("packageChoice", opt.id);
+                        }
+                      }}
+                      aria-pressed={active}
+                      className={`${packageCard(active)} cursor-pointer`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <div className="font-heading text-lg">{opt.label}</div>
+                          <div
+                            className={`mt-1 text-sm ${
+                              active ? "text-white/85" : "text-brown-soft"
+                            }`}
+                          >
+                            {opt.description}
+                          </div>
+                        </div>
+                        <div className="shrink-0 text-right">
+                          <div className="font-heading text-xl">
+                            {formatUSDPlus(opt.price, opt.priceVaries)}
+                          </div>
+                          {opt.priceVaries && (
+                            <div
+                              className={`text-[11px] ${
+                                active ? "text-white/70" : "text-brown-soft"
+                              }`}
+                            >
+                              starting price
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Expandable "what's included" (Healthy Spot-style More/Less) */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleExpanded(opt.id);
+                        }}
+                        aria-expanded={isOpen}
+                        className={`mt-2 text-sm font-semibold underline underline-offset-2 ${
+                          active
+                            ? "text-white/90 hover:text-white"
+                            : "text-blush hover:text-blush/80"
+                        }`}
+                      >
+                        {isOpen ? "Hide details ▴" : "What's included ▾"}
+                      </button>
+                      {isOpen && (
+                        <ul
+                          className={`mt-2 space-y-1.5 text-sm ${
                             active ? "text-white/85" : "text-brown-soft"
                           }`}
                         >
-                          {opt.description}
-                        </div>
-                      </div>
-                      <div className="shrink-0 text-right">
-                        <div className="font-heading text-xl">
-                          {formatUSDPlus(opt.price, opt.priceVaries)}
-                        </div>
-                        {opt.priceVaries && (
-                          <div
-                            className={`text-[11px] ${
-                              active ? "text-white/70" : "text-brown-soft"
-                            }`}
-                          >
-                            starting price
-                          </div>
-                        )}
-                      </div>
+                          {opt.includes.map((item) => (
+                            <li key={item} className="flex items-start gap-2">
+                              <span aria-hidden className="mt-0.5 text-blush">
+                                •
+                              </span>
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
+                  );
+                })}
 
-                    {/* Expandable "what's included" (Healthy Spot-style More/Less) */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleExpanded(opt.id);
-                      }}
-                      aria-expanded={isOpen}
-                      className={`mt-2 text-sm font-semibold underline underline-offset-2 ${
-                        active
-                          ? "text-white/90 hover:text-white"
-                          : "text-blush hover:text-blush/80"
+              {/* Skip option */}
+              <button
+                type="button"
+                onClick={() => set("packageChoice", "skip")}
+                aria-pressed={form.packageChoice === "skip"}
+                className={packageCard(form.packageChoice === "skip")}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <div className="font-heading text-lg">Skip — add-ons only</div>
+                    <div
+                      className={`mt-1 text-sm ${
+                        form.packageChoice === "skip"
+                          ? "text-white/85"
+                          : "text-brown-soft"
                       }`}
                     >
-                      {isOpen ? "Hide details ▴" : "What's included ▾"}
-                    </button>
-                    {isOpen && (
-                      <ul
-                        className={`mt-2 space-y-1.5 text-sm ${
-                          active ? "text-white/85" : "text-brown-soft"
-                        }`}
-                      >
-                        {opt.includes.map((item) => (
-                          <li key={item} className="flex items-start gap-2">
-                            <span aria-hidden className="mt-0.5">
-                              ✓
-                            </span>
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+                      No bath or groom — just pick from the add-ons next.
+                    </div>
                   </div>
-                );
-              })}
-
-            {/* Skip option */}
-            <button
-              type="button"
-              onClick={() => set("packageChoice", "skip")}
-              aria-pressed={form.packageChoice === "skip"}
-              className={packageCard(form.packageChoice === "skip")}
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <div className="font-heading text-lg">Skip — add-ons only</div>
-                  <div
-                    className={`mt-1 text-sm ${
-                      form.packageChoice === "skip"
-                        ? "text-white/85"
-                        : "text-brown-soft"
-                    }`}
-                  >
-                    No bath or groom — just pick from the add-ons next.
-                  </div>
+                  <div className="shrink-0 font-heading text-xl">$0</div>
                 </div>
-                <div className="shrink-0 font-heading text-xl">$0</div>
-              </div>
-            </button>
-          </div>
-        </Step>
-      )}
+              </button>
+            </div>
+          </Step>
 
-      {/* Step 3 — Add-ons */}
-      {step === 2 && (
-        <Step title="Add-ons" hint="Optional — pick any you'd like.">
-          <div className="grid gap-2 sm:grid-cols-2">
-            {ADD_ONS.map((a) => {
-              const active = form.addOns.includes(a.id);
-              return (
-                <button
-                  key={a.id}
-                  type="button"
-                  onClick={() => toggleAddOn(a.id)}
-                  aria-pressed={active}
-                  className={chip(active, "!items-start flex-col !gap-1 text-left")}
-                >
-                  <span className="flex w-full items-center justify-between gap-2">
-                    <span className="flex items-center gap-2 font-medium">
-                      <span
-                        aria-hidden
-                        className={`grid h-4 w-4 shrink-0 place-items-center rounded border text-[10px] ${
-                          active
-                            ? "border-white bg-white/20 text-white"
-                            : "border-black/20 text-transparent"
-                        }`}
-                      >
-                        ✓
+          <Step title="Add-ons" hint="Optional — pick any you'd like.">
+            <div className="grid gap-2 sm:grid-cols-2">
+              {ADD_ONS.map((a) => {
+                const active = form.addOns.includes(a.id);
+                return (
+                  <button
+                    key={a.id}
+                    type="button"
+                    onClick={() => toggleAddOn(a.id)}
+                    aria-pressed={active}
+                    className={chip(active, "!items-start flex-col !gap-1 text-left")}
+                  >
+                    <span className="flex w-full items-center justify-between gap-2">
+                      <span className="flex items-center gap-2 font-medium">
+                        <span
+                          aria-hidden
+                          className={`grid h-5 w-5 shrink-0 place-items-center rounded-full border-2 text-xs font-bold transition ${
+                            active
+                              ? "border-white bg-white text-blush"
+                              : "border-brown/40 bg-white text-transparent"
+                          }`}
+                        >
+                          ✓
+                        </span>
+                        {a.label}
                       </span>
-                      {a.label}
+                      <span
+                        className={active ? "text-white/90" : "text-brown-soft"}
+                      >
+                        {formatUSDPlus(a.price, true)}
+                      </span>
                     </span>
                     <span
-                      className={active ? "text-white/90" : "text-brown-soft"}
+                      className={`pl-6 text-xs leading-snug ${
+                        active ? "text-white/75" : "text-brown-soft"
+                      }`}
                     >
-                      {formatUSDPlus(a.price, true)}
+                      {a.description}
                     </span>
-                  </span>
-                  <span
-                    className={`pl-6 text-xs leading-snug ${
-                      active ? "text-white/75" : "text-brown-soft"
-                    }`}
-                  >
-                    {a.description}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </Step>
+                  </button>
+                );
+              })}
+            </div>
+          </Step>
+        </div>
       )}
 
-      {/* Step 4 — Groomer & time */}
-      {step === 3 && (
-        <Step title="Groomer & time">
+      {/* Step 3 — Date & groomer */}
+      {step === 2 && (
+        <Step title="Date & groomer">
           <Field label="Preferred groomer">
             <div className="flex flex-wrap gap-2">
               {GROOMERS.map((g) => (
@@ -558,126 +560,125 @@ export default function BookingWizard() {
         </Step>
       )}
 
-      {/* Step 5 — Contact */}
-      {step === 4 && (
-        <Step title="Your contact details">
-          <Field label="Your name" required>
-            <input
-              className={input}
-              value={form.ownerName}
-              onChange={(e) => set("ownerName", e.target.value)}
-              placeholder="Full name"
-            />
-          </Field>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Phone" required>
+      {/* Step 4 — Contact & review */}
+      {step === 3 && (
+        <div className="space-y-8">
+          <Step title="Your contact details">
+            <Field label="Your name" required>
               <input
-                type="tel"
                 className={input}
-                value={form.phone}
-                onChange={(e) => set("phone", e.target.value)}
-                placeholder="(310) 555-0192"
+                value={form.ownerName}
+                onChange={(e) => set("ownerName", e.target.value)}
+                placeholder="Full name"
               />
             </Field>
-            <Field label="Email" required>
-              <input
-                type="email"
-                className={input}
-                value={form.email}
-                onChange={(e) => set("email", e.target.value)}
-                placeholder="you@example.com"
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Phone" required>
+                <input
+                  type="tel"
+                  className={input}
+                  value={form.phone}
+                  onChange={(e) => set("phone", e.target.value)}
+                  placeholder="(310) 555-0192"
+                />
+              </Field>
+              <Field label="Email" required>
+                <input
+                  type="email"
+                  className={input}
+                  value={form.email}
+                  onChange={(e) => set("email", e.target.value)}
+                  placeholder="you@example.com"
+                />
+              </Field>
+            </div>
+            <Field label="Notes (optional)">
+              <textarea
+                className={`${input} min-h-[90px]`}
+                value={form.notes}
+                onChange={(e) => set("notes", e.target.value)}
+                placeholder="Anything we should know — sensitivities, matting, style preferences…"
               />
             </Field>
-          </div>
-          <Field label="Notes (optional)">
-            <textarea
-              className={`${input} min-h-[90px]`}
-              value={form.notes}
-              onChange={(e) => set("notes", e.target.value)}
-              placeholder="Anything we should know — sensitivities, matting, style preferences…"
-            />
-          </Field>
-        </Step>
-      )}
+          </Step>
 
-      {/* Step 6 — Review */}
-      {step === 5 && (
-        <Step title="Review & confirm">
-          <dl className="divide-y divide-black/5 rounded-2xl bg-cream/60 p-4 text-sm">
-            <Row label="Pet">
-              {form.petName} · {form.breed} · {form.size}
-            </Row>
-            <Row label="Package">
-              {resolvePackage(form.packageChoice)
-                ? summarizeSelections(resolvePackage(form.packageChoice), [])
-                : "None (add-ons only)"}
-            </Row>
-            <Row label="Add-ons">
-              {form.addOns.length
-                ? summarizeSelections(null, form.addOns)
-                : "None"}
-            </Row>
-            <Row label="Groomer">{form.groomerName}</Row>
-            <Row label="When">
-              {form.date} at {form.time}
-            </Row>
-            <Row label="Contact">
-              {form.ownerName} · {form.phone} · {form.email}
-            </Row>
-            {form.notes && <Row label="Notes">{form.notes}</Row>}
-          </dl>
+          <Step title="Review & confirm">
+            <dl className="divide-y divide-black/5 rounded-2xl bg-cream/60 p-4 text-sm">
+              <Row label="Pet">
+                {form.petName} · {form.breed} · {form.size}
+              </Row>
+              <Row label="Package">
+                {resolvePackage(form.packageChoice)
+                  ? summarizeSelections(resolvePackage(form.packageChoice), [])
+                  : "None (add-ons only)"}
+              </Row>
+              <Row label="Add-ons">
+                {form.addOns.length
+                  ? summarizeSelections(null, form.addOns)
+                  : "None"}
+              </Row>
+              <Row label="Groomer">{form.groomerName}</Row>
+              <Row label="When">
+                {form.date} at {form.time}
+              </Row>
+              <Row label="Contact">
+                {form.ownerName} · {form.phone} · {form.email}
+              </Row>
+              {form.notes && <Row label="Notes">{form.notes}</Row>}
+            </dl>
 
-          {breakdown && (
-            <div className="mt-4 rounded-2xl border border-blush/40 bg-blush-light/50 p-4">
-              {breakdown.lineItems.length === 0 ? (
-                <p className="text-sm text-brown-soft">
-                  No package or add-ons selected.
-                </p>
-              ) : (
-                <ul className="space-y-1 text-sm">
-                  {breakdown.lineItems.map((li) => (
-                    <li key={li.id} className="flex justify-between">
+            {breakdown && (
+              <div className="mt-4 rounded-2xl border border-blush/40 bg-blush-light/50 p-4">
+                {breakdown.lineItems.length === 0 ? (
+                  <p className="text-sm text-brown-soft">
+                    No package or add-ons selected.
+                  </p>
+                ) : (
+                  <ul className="space-y-1 text-sm">
+                    {breakdown.lineItems.map((li) => (
+                      <li key={li.id} className="flex justify-between">
+                        <span className="text-brown-soft">
+                          {li.label}
+                          {li.isPackage ? "" : " (add-on)"}
+                        </span>
+                        <span className="font-medium text-brown">
+                          {formatUSDPlus(li.amount, li.varies)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {breakdown.lineItems.length > 0 && (
+                  <div className="mt-3 space-y-1 border-t border-blush/40 pt-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-brown-soft">Subtotal</span>
+                      <span className="font-medium text-brown">
+                        {formatUSDPlus(breakdown.subtotal, breakdown.totalVaries)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
                       <span className="text-brown-soft">
-                        {li.label}
-                        {li.isPackage ? "" : " (add-on)"}
+                        Estimated tax ({(ESTIMATED_TAX_RATE * 100).toFixed(2).replace(/\.?0+$/, "")}%)
                       </span>
                       <span className="font-medium text-brown">
-                        {formatUSDPlus(li.amount, li.varies)}
+                        {formatUSD(breakdown.tax)}
                       </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {breakdown.lineItems.length > 0 && (
-                <div className="mt-3 space-y-1 border-t border-blush/40 pt-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-brown-soft">Subtotal</span>
-                    <span className="font-medium text-brown">
-                      {formatUSDPlus(breakdown.subtotal, breakdown.totalVaries)}
-                    </span>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-brown-soft">
-                      Estimated tax ({(ESTIMATED_TAX_RATE * 100).toFixed(2).replace(/\.?0+$/, "")}%)
-                    </span>
-                    <span className="font-medium text-brown">
-                      {formatUSD(breakdown.tax)}
-                    </span>
-                  </div>
+                )}
+                <div className="mt-3 flex items-center justify-between border-t border-blush/40 pt-3">
+                  <span className="font-heading text-lg text-brown">
+                    Estimated total
+                  </span>
+                  <span className="font-heading text-xl text-brown">
+                    {formatUSDPlus(breakdown.total, breakdown.totalVaries)}
+                  </span>
                 </div>
-              )}
-              <div className="mt-3 flex items-center justify-between border-t border-blush/40 pt-3">
-                <span className="font-heading text-lg text-brown">
-                  Estimated total
-                </span>
-                <span className="font-heading text-xl text-brown">
-                  {formatUSDPlus(breakdown.total, breakdown.totalVaries)}
-                </span>
+                <p className="mt-2 text-xs text-brown-soft">{PRICE_DISCLAIMER}</p>
               </div>
-              <p className="mt-2 text-xs text-brown-soft">{PRICE_DISCLAIMER}</p>
-            </div>
-          )}
-        </Step>
+            )}
+          </Step>
+        </div>
       )}
 
       {/* Error */}

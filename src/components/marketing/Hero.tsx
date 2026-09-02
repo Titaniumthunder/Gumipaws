@@ -1,61 +1,39 @@
-import { BUSINESS } from "@/content/site";
+import { CTA } from "@/content/site";
 import HeroSlideshow from "./HeroSlideshow";
 
-/** Five gold stars for the social-proof line. */
-function Stars() {
-  return (
-    <span aria-label="5 out of 5 stars" className="text-gold">
-      {"★★★★★"}
-    </span>
-  );
-}
-
+/**
+ * The first thing a visitor sees: one headline, one sentence, one action, one
+ * photo.
+ *
+ * The stars, the "same-week spots" and "fluff guaranteed" badges and the second
+ * button all used to sit here too. Six things asking for attention at once is
+ * no emphasis at all, so the supporting proof moved just below the fold into
+ * TrustStrip, where it still lands early without competing with the booking
+ * button.
+ */
 export default function Hero() {
   return (
     <section id="top" className="relative overflow-hidden">
       <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 md:py-20">
-        {/* Copy */}
         <div>
           <h1 className="font-heading text-4xl leading-tight text-brown sm:text-5xl md:text-6xl">
             The spa day your pup looks forward to.
           </h1>
           <p className="mt-5 max-w-md text-lg text-brown-soft">
             Boutique grooming with warm hydro-baths, hand-finished cuts, and
-            honest, posted prices. Your dog leaves fluffy, fresh, and happy.
+            honest, posted prices.
           </p>
 
-          <div className="mt-7 flex flex-wrap items-center gap-3">
-            <a
-              href="/book"
-              className="rounded-full bg-blush px-6 py-3 font-semibold text-white shadow-card transition hover:bg-blush/90"
-            >
-              Book a spa day
-            </a>
-            <a
-              href={BUSINESS.phoneHref}
-              className="rounded-full border border-brown/20 px-6 py-3 font-semibold text-brown transition hover:bg-card"
-            >
-              Call {BUSINESS.phone}
-            </a>
-          </div>
-
-          <div className="mt-6 flex items-center gap-2 text-sm text-brown-soft">
-            <Stars />
-            <span>Loved by 300+ local pups</span>
-          </div>
+          <a
+            href="/book"
+            className="mt-8 inline-block rounded-full bg-blush px-8 py-4 font-semibold text-white shadow-card transition hover:bg-blush/90"
+          >
+            {CTA.primary}
+          </a>
         </div>
 
-        {/* Rotating photo + badges */}
-        <div className="relative">
-          <div className="h-[380px] overflow-hidden rounded-4xl bg-cream-deep shadow-soft md:h-[460px]">
-            <HeroSlideshow />
-          </div>
-          <span className="absolute -left-3 top-6 rounded-full bg-card px-4 py-2 text-sm font-semibold text-brown shadow-card">
-            ✨ Same-week spots
-          </span>
-          <span className="absolute -right-3 bottom-6 rounded-full bg-card px-4 py-2 text-sm font-semibold text-brown shadow-card">
-            🛁 Fluff guaranteed
-          </span>
+        <div className="h-[380px] overflow-hidden rounded-4xl bg-cream-deep shadow-soft md:h-[460px]">
+          <HeroSlideshow />
         </div>
       </div>
     </section>

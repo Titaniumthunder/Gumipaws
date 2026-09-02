@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BUSINESS, LOGO, NAV_LINKS } from "@/content/site";
+import { BUSINESS, CTA, LOGO, NAV_LINKS } from "@/content/site";
 
 /** Sticky top navigation with a mobile drawer. */
 export default function Nav() {
@@ -43,7 +43,7 @@ export default function Nav() {
             href="/book"
             className="rounded-full bg-blush px-4 py-2 text-sm font-semibold text-white shadow-card transition hover:bg-blush/90"
           >
-            Book a spa day
+            {CTA.primary}
           </a>
           {/* Mobile menu toggle */}
           <button
@@ -51,7 +51,7 @@ export default function Nav() {
             aria-label="Toggle menu"
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
-            className="grid h-9 w-9 place-items-center rounded-full border border-black/10 text-brown lg:hidden"
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-black/10 text-brown lg:hidden"
           >
             {open ? "✕" : "☰"}
           </button>
