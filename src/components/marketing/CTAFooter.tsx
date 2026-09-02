@@ -4,7 +4,7 @@ export default function CTAFooter() {
   return (
     <>
       {/* Pink banner CTA */}
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+      <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
         <div className="rounded-4xl bg-gradient-to-br from-blush to-blush-mid px-6 py-14 text-center shadow-soft">
           <h2 className="font-heading text-3xl text-white sm:text-4xl">
             Ready for a fluffier, happier pup?
@@ -66,7 +66,7 @@ export default function CTAFooter() {
             <ul className="mt-3 space-y-2 text-sm text-brown-soft">
               {SERVICE_CARDS.filter((c) => !c.accent).map((c) => (
                 <li key={c.title}>
-                  <a href="#services" className="hover:text-brown">
+                  <a href="/#services" className="hover:text-brown">
                     {c.title}
                   </a>
                 </li>

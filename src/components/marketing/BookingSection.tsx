@@ -8,12 +8,12 @@ import { CTA } from "@/content/site";
  */
 export default function BookingSection() {
   return (
-    <section id="book" className="bg-cream-deep py-16">
+    <section id="book" className="bg-cream-deep py-20 sm:py-28">
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
         <p className="text-sm font-semibold uppercase tracking-widest text-gold">
           Book
         </p>
-        <h2 className="mt-2 font-heading text-3xl text-brown sm:text-4xl">
+        <h2 className="mt-3 font-heading text-4xl text-brown sm:text-5xl">
           {CTA.primary}
         </h2>
         <p className="mx-auto mt-4 max-w-md text-brown-soft">

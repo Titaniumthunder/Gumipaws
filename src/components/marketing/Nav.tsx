@@ -11,7 +11,7 @@ export default function Nav() {
     <header className="sticky top-0 z-50 border-b border-black/5 bg-cream/85 backdrop-blur">
       <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
         {/* Wordmark */}
-        <a href="#top" className="flex items-center gap-2">
+        <a href="/#top" className="flex items-center gap-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={LOGO}

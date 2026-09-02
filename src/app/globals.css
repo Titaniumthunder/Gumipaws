@@ -14,7 +14,9 @@
   h1,
   h2,
   h3 {
-    @apply font-heading;
+    /* Manrope wants negative tracking at display sizes; at its default the
+       large headings look loose and drift apart. */
+    @apply font-heading font-semibold tracking-tight;
   }
 }
 

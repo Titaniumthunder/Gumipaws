@@ -9,13 +9,18 @@ export const BUSINESS = {
   hours: "Tue–Sun 8am–4pm · Mon closed",
 };
 
+/**
+ * Absolute hrefs, not bare fragments: pricing now lives on its own page, so a
+ * visitor can be on /pricing or /book when they use these. "#services" would
+ * simply do nothing from there.
+ */
 export const NAV_LINKS = [
-  { label: "Services", href: "#services" },
-  { label: "Full Groom", href: "#full-groom" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "How it works", href: "#how-it-works" },
-  { label: "Gallery", href: "#gallery" },
-  { label: "Visit", href: "#visit" },
+  { label: "Services", href: "/#services" },
+  { label: "Full Groom", href: "/#full-groom" },
+  { label: "Pricing", href: "/pricing" },
+  { label: "How it works", href: "/#how-it-works" },
+  { label: "Gallery", href: "/#gallery" },
+  { label: "Visit", href: "/#visit" },
 ];
 
 export const MARQUEE_ITEMS = [
@@ -98,7 +103,7 @@ export const SERVICE_CARDS = [
       "De-shedding, nail trims, teeth brushing, a blueberry facial and more — add any to a groom.",
     /** Add-ons are chosen inside the booking flow, so this card points at the
         posted add-on list rather than starting a booking. */
-    href: "#pricing",
+    href: "/pricing",
   },
   {
     title: "The Boutique",

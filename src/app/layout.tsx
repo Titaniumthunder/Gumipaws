@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
-import { Gloock, Hanken_Grotesk } from "next/font/google";
+import { Hanken_Grotesk, Manrope } from "next/font/google";
 import "./globals.css";
 
-// Headings: Gloock. Body: Hanken Grotesk. Exposed as CSS variables consumed by
+// Headings: Manrope. Body: Hanken Grotesk. Exposed as CSS variables consumed by
 // Tailwind's fontFamily config.
-const gloock = Gloock({
-  weight: "400",
+// Manrope replaces the Gloock serif for headings: a geometric sans set large
+// and tightly tracked reads as calmer and more modern, which is the quality
+// the review picked out. The pink and cream palette is unchanged.
+const manrope = Manrope({
+  weight: ["500", "600", "700"],
   subsets: ["latin"],
-  variable: "--font-gloock",
+  variable: "--font-manrope",
   display: "swap",
 });
 
@@ -34,7 +37,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${gloock.variable} ${hanken.variable}`}>
+    <html lang="en" className={`${manrope.variable} ${hanken.variable}`}>
       <body>{children}</body>
     </html>
   );

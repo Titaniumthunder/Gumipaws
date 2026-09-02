@@ -11,12 +11,12 @@ export default function Gallery() {
   return (
     /* The heading stays in the page's column; the carousel below runs the full
        width of the window so the photos are as large as the screen allows. */
-    <section id="gallery" className="py-16">
+    <section id="gallery" className="py-20 sm:py-28">
       <div className="mx-auto mb-10 max-w-6xl px-4 text-center sm:px-6">
         <p className="text-sm font-semibold uppercase tracking-widest text-gold">
           Gallery
         </p>
-        <h2 className="mt-2 font-heading text-3xl text-brown sm:text-4xl">
+        <h2 className="mt-3 font-heading text-4xl text-brown sm:text-5xl">
           Before &amp; after
         </h2>
         <p className="mt-3 text-brown-soft">

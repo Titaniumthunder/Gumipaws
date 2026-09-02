@@ -11,13 +11,13 @@ import { CTA, FULL_GROOM_CHECKLIST } from "@/content/site";
  */
 export default function SignaturePackage() {
   return (
-    <section id="full-groom" className="bg-cream-deep py-16">
+    <section id="full-groom" className="bg-cream-deep py-20 sm:py-28">
       <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 md:grid-cols-2">
         <div>
           <p className="text-sm font-semibold uppercase tracking-widest text-gold">
             Signature package
           </p>
-          <h2 className="mt-2 font-heading text-3xl text-brown sm:text-4xl">
+          <h2 className="mt-3 font-heading text-4xl text-brown sm:text-5xl">
             The GumiPaws Full Groom
           </h2>
           <p className="mt-4 max-w-md text-brown-soft">
@@ -47,7 +47,7 @@ export default function SignaturePackage() {
               {CTA.primary}
             </a>
             <a
-              href="#pricing"
+              href="/pricing"
               className="rounded-full border border-brown/20 px-6 py-3 font-semibold text-brown transition hover:bg-card"
             >
               {CTA.secondary}

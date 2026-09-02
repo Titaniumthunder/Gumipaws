@@ -1,16 +1,18 @@
-import { ADD_ONS, PRICING_COLUMNS, SIZE_FOOTNOTE } from "@/content/site";
+import { ADD_ONS, PRICING_COLUMNS } from "@/content/site";
 
-export default function PricingTable() {
+export default function PricingTable({ heading = true }: { heading?: boolean }) {
   return (
-    <section id="pricing" className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-      <div className="mb-10 text-center">
-        <p className="text-sm font-semibold uppercase tracking-widest text-gold">
-          Pricing
-        </p>
-        <h2 className="mt-2 font-heading text-3xl text-brown sm:text-4xl">
-          Honest, posted prices
-        </h2>
-      </div>
+    <section id="pricing" className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
+      {heading && (
+        <div className="mb-14 text-center">
+          <p className="text-sm font-semibold uppercase tracking-widest text-gold">
+            Pricing
+          </p>
+          <h2 className="mt-3 font-heading text-4xl text-brown sm:text-5xl">
+            Honest, posted prices
+          </h2>
+        </div>
+      )}
 
       <div className="grid gap-6 md:grid-cols-3">
         {PRICING_COLUMNS.map((col) => (
@@ -77,7 +79,6 @@ export default function PricingTable() {
         </ul>
       </div>
 
-      <p className="mt-6 text-center text-xs text-brown-soft">{SIZE_FOOTNOTE}</p>
     </section>
   );
 }

@@ -18,7 +18,7 @@ const config: Config = {
       },
       fontFamily: {
         // Wired up via next/font in layout.tsx (CSS variables).
-        heading: ["var(--font-gloock)", "Georgia", "serif"],
+        heading: ["var(--font-manrope)", "system-ui", "sans-serif"],
         body: ["var(--font-hanken)", "system-ui", "sans-serif"],
       },
       boxShadow: {
