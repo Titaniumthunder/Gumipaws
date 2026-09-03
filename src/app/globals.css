@@ -6,7 +6,7 @@
   html {
     scroll-behavior: smooth;
     /* Offset anchor jumps for the sticky nav. */
-    scroll-padding-top: 5rem;
+    scroll-padding-top: 7rem;
   }
   body {
     @apply bg-cream text-brown font-body antialiased;

@@ -9,20 +9,22 @@ export default function Nav() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-black/5 bg-cream/85 backdrop-blur">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-4 sm:gap-4 sm:px-6 sm:py-5">
         {/* Wordmark */}
-        <a href="/" className="flex items-center gap-2">
+        <a href="/" className="flex items-center gap-2 sm:gap-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={LOGO}
             alt="GumiPaws logo"
-            className="h-10 w-10 rounded-full bg-cream-deep object-cover ring-1 ring-black/5"
+            className="h-11 w-11 shrink-0 rounded-full bg-cream-deep object-cover ring-1 ring-black/5 sm:h-14 sm:w-14"
           />
-          <span className="font-heading text-xl text-brown">GumiPaws</span>
+          <span className="hidden font-heading text-xl text-brown min-[400px]:inline sm:text-2xl lg:text-3xl">
+            GumiPaws
+          </span>
         </a>
 
         {/* Desktop links */}
-        <ul className="hidden items-center gap-6 text-sm font-medium text-brown-soft lg:flex">
+        <ul className="hidden items-center gap-8 text-base font-medium text-brown-soft lg:flex">
           {NAV_LINKS.map((link) => (
             <li key={link.href}>
               <a href={link.href} className="transition hover:text-brown">
@@ -32,16 +34,16 @@ export default function Nav() {
           ))}
         </ul>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <a
             href={BUSINESS.phoneHref}
-            className="hidden text-sm font-semibold text-brown sm:inline"
+            className="hidden font-semibold text-brown sm:inline sm:text-base"
           >
             {BUSINESS.phone}
           </a>
           <a
             href="/book"
-            className="rounded-full bg-blush px-4 py-2 text-sm font-semibold text-white shadow-card transition hover:bg-blush/90"
+            className="whitespace-nowrap rounded-full bg-blush px-4 py-2 text-sm font-semibold text-white shadow-card transition hover:bg-blush/90 sm:px-6 sm:py-3 sm:text-base"
           >
             {CTA.primary}
           </a>

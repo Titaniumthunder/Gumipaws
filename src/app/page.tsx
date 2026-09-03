@@ -3,7 +3,6 @@ import Hero from "@/components/marketing/Hero";
 import TrustStrip from "@/components/marketing/TrustStrip";
 import Testimonial from "@/components/marketing/Testimonial";
 import Services from "@/components/marketing/Services";
-import PhotoBand from "@/components/marketing/PhotoBand";
 import CTAFooter from "@/components/marketing/CTAFooter";
 
 /**
@@ -15,10 +14,13 @@ import CTAFooter from "@/components/marketing/CTAFooter";
  * the nav gets people there in one click, which is faster than scrolling.
  *
  * What is left is the minimum needed to decide whether to keep going: who we
- * are (Hero), that other people trust us (TrustStrip), what we actually do
- * (Services), and a look at the work (PhotoBand). Testimonial sits between the
- * trust strip and the services for when there is a real quote to put there; it
- * renders nothing until then.
+ * are (Hero), that other people trust us (TrustStrip), and what we actually do
+ * (Services). Testimonial sits between the trust strip and the services for
+ * when there is a real quote to put there; it renders nothing until then.
+ *
+ * The photography lives on the gallery page. A full-width photo band used to
+ * close this page off; it was cut on review because the homepage should hand
+ * people to a page, not hold them here looking at one picture.
  *
  * The temptation will be to add "just one more" section back. Don't — the
  * length is the feature.
@@ -35,7 +37,6 @@ export default function HomePage() {
       <TrustStrip />
       <Testimonial />
       <Services />
-      <PhotoBand />
       <CTAFooter />
     </main>
   );
