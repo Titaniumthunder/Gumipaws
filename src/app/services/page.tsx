@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Nav from "@/components/marketing/Nav";
 import PageHeader from "@/components/marketing/PageHeader";
 import Services from "@/components/marketing/Services";
-import PricingTable from "@/components/marketing/PricingTable";
+import ServiceMenu from "@/components/marketing/ServiceMenu";
 import CTAFooter from "@/components/marketing/CTAFooter";
 import { CTA, SIZE_FOOTNOTE } from "@/content/site";
 
@@ -38,8 +38,8 @@ export default function ServicesPage() {
 
       <Services heading={false} />
 
-      {/* PricingTable carries its own heading block, but PageHeader has already
-          spent this page's h1 — so it is suppressed and the h2 written here. */}
+      {/* PageHeader has already spent this page's h1, so the pricing block
+          opens on an h2 written here rather than one inside the component. */}
       <section className="mx-auto max-w-3xl px-4 pt-20 text-center sm:px-6 sm:pt-28">
         <p className="text-sm font-semibold uppercase tracking-widest text-gold">
           Pricing
@@ -48,12 +48,13 @@ export default function ServicesPage() {
           Honest, posted prices
         </h2>
         <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-brown-soft">
-          Your dog&apos;s size sets the starting price. We confirm the final
-          figure at drop-off, before any work begins.
+          Pick a service to see its prices. Your dog&apos;s size sets the
+          starting figure, and we confirm the final one at drop-off before any
+          work begins.
         </p>
       </section>
 
-      <PricingTable heading={false} />
+      <ServiceMenu />
 
       <section className="mx-auto max-w-3xl px-4 pb-4 text-center sm:px-6">
         <p className="text-xs leading-relaxed text-brown-soft">

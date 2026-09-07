@@ -150,50 +150,83 @@ export const FULL_GROOM_CHECKLIST = [
   "Finishing spritz, bow or bandana",
 ];
 
-export const FULL_GROOM_SIZE_PRICING = [
-  { size: "Toy", price: "$109+" },
-  { size: "Small", price: "$124+" },
-  { size: "Medium", price: "$149+" },
-  { size: "Large", price: "$159+" },
-  { size: "X-Large", price: "$179+" },
+/**
+ * Weight bands. Named once here because they appear against every price on the
+ * services page, and a size that means one thing in the bath list and another
+ * in the full-groom list would be worse than not saying it at all.
+ */
+const SIZE_BANDS = [
+  { name: "Toy", detail: "Under 15 lb" },
+  { name: "Small", detail: "16–25 lb" },
+  { name: "Medium", detail: "26–45 lb" },
+  { name: "Large", detail: "46–75 lb" },
+  { name: "X-Large", detail: "76 lb and over" },
 ];
 
-/** Three-column pricing table by size. */
-export const PRICING_COLUMNS = [
+/** One priced line: what it costs, what it is, and who it is for. */
+export type ServiceTier = {
+  price: string;
+  name: string;
+  detail?: string;
+};
+
+/** A set of tiers under an optional sub-heading, e.g. "Short hair". */
+export type ServiceGroup = { name?: string; tiers: ServiceTier[] };
+
+/** One tab on the services page. */
+export type ServiceTab = {
+  id: string;
+  label: string;
+  blurb: string;
+  groups: ServiceGroup[];
+};
+
+/** Pair a run of prices with the size bands, in order. */
+const bySize = (prices: string[]): ServiceTier[] =>
+  SIZE_BANDS.map((band, i) => ({
+    price: prices[i],
+    name: band.name,
+    detail: band.detail,
+  }));
+
+/**
+ * The services menu, as tabs.
+ *
+ * This replaced a three-column table that asked a visitor to read across
+ * columns they did not care about to find the one price they did. Picking the
+ * service first and then reading a short list is the way people actually
+ * arrive at this page: they know they want a bath, not a comparison.
+ *
+ * Add-ons reuse ADD_ONS below rather than restating the list, so the menu and
+ * the booking flow cannot drift apart.
+ */
+export const SERVICE_MENU: ServiceTab[] = [
   {
-    name: "Bath",
-    popular: false,
-    note: "short / long hair",
-    rows: [
-      { size: "Toy", price: "$50+ / $60+" },
-      { size: "Small", price: "$60+ / $70+" },
-      { size: "Medium", price: "$75+ / $95+" },
-      { size: "Large", price: "$90+ / $109+" },
-      { size: "X-Large", price: "$110+ / $134+" },
+    id: "bath",
+    label: "Bath & Brush",
+    blurb:
+      "Warm hydro-bath, tearless shampoo matched to the skin, blow-out and brush. Priced by size, and by how much coat there is to dry.",
+    groups: [
+      { name: "Short hair", tiers: bySize(["$50+", "$60+", "$75+", "$90+", "$110+"]) },
+      { name: "Long hair", tiers: bySize(["$60+", "$70+", "$95+", "$109+", "$134+"]) },
     ],
   },
   {
-    name: "Full Groom",
-    popular: true,
-    note: "all-inclusive",
-    rows: [
-      { size: "Toy", price: "$109+" },
-      { size: "Small", price: "$124+" },
-      { size: "Medium", price: "$149+" },
-      { size: "Large", price: "$159+" },
-      { size: "X-Large", price: "$179+" },
+    id: "full-groom",
+    label: "Full Groom",
+    blurb:
+      "Everything in the bath, plus a hand-finished haircut, nails, ears, sanitary trim and a finishing spritz. Our most-booked service.",
+    groups: [
+      { tiers: bySize(["$109+", "$124+", "$149+", "$159+", "$179+"]) },
     ],
   },
   {
-    name: "Poodles & Oodles",
-    popular: false,
-    note: "curly & doodle coats",
-    rows: [
-      { size: "Toy", price: "$139+" },
-      { size: "Small", price: "$159+" },
-      { size: "Medium", price: "$179+" },
-      { size: "Large", price: "$209+" },
-      { size: "X-Large", price: "$249+" },
+    id: "poodles",
+    label: "Poodles & Oodles",
+    blurb:
+      "Curly and doodle coats take longer to brush out, dry and shape, so they are priced on their own rather than hidden as a surcharge.",
+    groups: [
+      { tiers: bySize(["$139+", "$159+", "$179+", "$209+", "$249+"]) },
     ],
   },
 ];
@@ -212,8 +245,25 @@ export const ADD_ONS = [
   { name: "Bow, bandana or cologne", price: "$5+" },
 ];
 
+/**
+ * The add-ons tab, appended here because it reads from ADD_ONS above. One list,
+ * so the services page and the booking flow cannot disagree about the menu.
+ */
+SERVICE_MENU.push({
+  id: "add-ons",
+  label: "Add-ons",
+  blurb:
+    "Add any of these to a bath or a groom. Chosen during booking, and priced the same whichever service they go with.",
+  groups: [{ tiers: ADD_ONS.map((a) => ({ price: a.price, name: a.name })) }],
+});
+
+/**
+ * The caveat under the services menu. It used to spell out the weight bands
+ * too, but every priced line now carries its own band, so all that remained
+ * was saying it twice.
+ */
 export const SIZE_FOOTNOTE =
-  "Sizes by weight: Toy <15 lb · Small 16–25 lb · Medium 26–45 lb · Large 46–75 lb · X-Large 76 lb+. Final price may vary with coat condition and matting.";
+  "Every price is a starting price. The final figure depends on coat condition and matting, and we confirm it with you at drop-off before any work begins.";
 
 export const HOW_IT_WORKS = [
   {
