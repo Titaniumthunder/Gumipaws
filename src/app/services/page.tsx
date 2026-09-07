@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Nav from "@/components/marketing/Nav";
 import PageHeader from "@/components/marketing/PageHeader";
-import Services from "@/components/marketing/Services";
 import ServiceMenu from "@/components/marketing/ServiceMenu";
 import CTAFooter from "@/components/marketing/CTAFooter";
 import { CTA, SIZE_FOOTNOTE } from "@/content/site";
@@ -9,54 +8,31 @@ import { CTA, SIZE_FOOTNOTE } from "@/content/site";
 export const metadata: Metadata = {
   title: "Services — GumiPaws",
   description:
-    "What we do and what it costs: baths, full grooms, poodle and doodle coats, and the full add-on menu, priced by size and posted in full.",
+    "Every GumiPaws service and what it costs: baths, full grooms, puppy's first groom, poodle and doodle coats, and the full add-on menu, priced by size.",
 };
 
 /**
- * Services: the work, and the price of the work, on one page.
+ * Services: pick a service, read its prices.
  *
- * These were two questions a visitor had to ask in two places — the service
- * cards described the groom, and the numbers lived a click away on /pricing.
- * Anyone weighing up a full groom wanted both at once, so they sit together
- * here.
- *
- * That is the whole page, and it is why nothing else is on it. Four sections is
- * already the most any page here carries; adding the process, the gallery or a
- * booking band would bury the prices under a scroll, which defeats the point of
- * putting them on the same page in the first place.
+ * Laid out after the reference site's services page, which is deliberately just
+ * four things — the page title, the service names, the prices, and a way to
+ * book. The service cards that used to sit above the prices here are gone: they
+ * are on the homepage, where they do the job of introducing the work, and
+ * repeating them directly above a list of the same services was the page
+ * saying everything twice before saying anything new.
  */
 export default function ServicesPage() {
   return (
     <main>
       <Nav />
 
-      <PageHeader
-        label="Services"
-        title="What we do"
-        intro="Every groom is hand-finished and sized to the coat in front of us. Here is the work, and here is what it costs."
-      />
+      <PageHeader label="Services" title="Our services" />
 
-      <Services heading={false} />
+      <div className="pb-4 pt-6 sm:pt-10">
+        <ServiceMenu />
+      </div>
 
-      {/* PageHeader has already spent this page's h1, so the pricing block
-          opens on an h2 written here rather than one inside the component. */}
-      <section className="mx-auto max-w-3xl px-4 pt-20 text-center sm:px-6 sm:pt-28">
-        <p className="text-sm font-semibold uppercase tracking-widest text-gold">
-          Pricing
-        </p>
-        <h2 className="mt-3 font-heading text-4xl text-brown sm:text-5xl">
-          Honest, posted prices
-        </h2>
-        <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-brown-soft">
-          Pick a service to see its prices. Your dog&apos;s size sets the
-          starting figure, and we confirm the final one at drop-off before any
-          work begins.
-        </p>
-      </section>
-
-      <ServiceMenu />
-
-      <section className="mx-auto max-w-3xl px-4 pb-4 text-center sm:px-6">
+      <section className="mx-auto max-w-xl px-4 pb-4 text-center sm:px-6">
         <p className="text-xs leading-relaxed text-brown-soft">
           {SIZE_FOOTNOTE}
         </p>

@@ -221,6 +221,23 @@ export const SERVICE_MENU: ServiceTab[] = [
     ],
   },
   {
+    id: "puppy",
+    label: "Puppy's First Groom",
+    blurb:
+      "A short, gentle introduction to the salon for pups under six months — handling, water, clippers and dryer, at whatever pace they can take.",
+    groups: [
+      {
+        tiers: [
+          {
+            price: "$40+",
+            name: "Puppy's First Groom",
+            detail: "Under six months",
+          },
+        ],
+      },
+    ],
+  },
+  {
     id: "poodles",
     label: "Poodles & Oodles",
     blurb:
