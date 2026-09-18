@@ -32,7 +32,7 @@ import CTAFooter from "@/components/marketing/CTAFooter";
 export default function HomePage() {
   return (
     <main>
-      <Nav />
+      <Nav overlay />
       <Hero />
       <TrustStrip />
       <Testimonial />

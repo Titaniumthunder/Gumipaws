@@ -379,43 +379,21 @@ export type GalleryEntry = GalleryPhoto | GalleryClip;
  * ------------------------------------------------------------------------ */
 
 /**
- * The hero slideshow — one transformation at a time, fading to the next every
- * few seconds so a visitor sees several different dogs without touching
- * anything.
+ * The home page hero: one full-bleed photo with the headline set over it.
  *
- * Each image is a before/after pair side by side with its labels printed in,
- * which is why they are `fit: "contain"`: cropping one to fill the frame would
- * cut off the half that makes the point.
+ * The photo is black and white on purpose. White type needs a dark picture
+ * behind it to stay readable, and a colour image would have to be dimmed so
+ * far to get there that it would lose what made it worth using.
  *
- * Keep the strongest first — it shows before any rotation happens, and it is
- * the only one a visitor who prefers reduced motion ever sees.
+ * It is a styled studio image rather than a client groom, which is why it lives
+ * here and not in GALLERY_ITEMS — the gallery promises real dogs.
  */
-export const HERO_SLIDESHOW: GalleryPhoto[] = [
-  {
-    dogName: "Transformation 2",
-    after: "/gallery/transformation-2.jpg",
-    alt: "An apricot poodle before and after grooming: shaggy and uneven, then trimmed into a rounded, fluffy style",
-    fit: "contain",
-  },
-  {
-    dogName: "Transformation 4",
-    after: "/gallery/transformation-4.jpg",
-    alt: "A golden doodle before and after grooming: flat, tangled coat, then brushed out and evenly shaped",
-    fit: "contain",
-  },
-  {
-    dogName: "Transformation 3",
-    after: "/gallery/transformation-3.jpg",
-    alt: "A small white dog before and after grooming: damp and scruffy in a towel, then dry and neatly rounded",
-    fit: "contain",
-  },
-  {
-    dogName: "Transformation 1",
-    after: "/gallery/transformation-1.jpg",
-    alt: "A brown wire-haired doodle before and after grooming from two angles: matted and unkempt, then soft and full",
-    fit: "contain",
-  },
-];
+export const HOME_HERO = {
+  image: "/brand/hero-spa-bw.jpg",
+  alt: "Two fluffy black-and-white doodles sitting side by side in a quiet grooming studio",
+  headline: "The spa day your pup looks forward to.",
+  subline: "Boutique grooming · Honest, posted prices",
+};
 
 /**
  * Gallery entries, in the order shown. These render one at a time in a sliding
