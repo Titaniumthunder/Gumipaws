@@ -389,8 +389,8 @@ export type GalleryEntry = GalleryPhoto | GalleryClip;
  * here and not in GALLERY_ITEMS — the gallery promises real dogs.
  */
 export const HOME_HERO = {
-  image: "/brand/hero-spa-bw.jpg",
-  alt: "Two fluffy black-and-white doodles sitting side by side in a quiet grooming studio",
+  image: "/brand/hero-spa-color.jpg",
+  alt: "Two fluffy black-and-white doodles sitting side by side in a soft pink grooming studio",
   headline: "The spa day your pup looks forward to.",
   subline: "Boutique grooming · Honest, posted prices",
 };
